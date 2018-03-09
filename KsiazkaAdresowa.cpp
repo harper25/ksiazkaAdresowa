@@ -243,10 +243,95 @@ void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi, vector <int> &listaID)
     }
 }
 
-void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomiznajomi, int modyfikowaneID)
+void wyszukajZnajomegoPoImieniu(vector <Kontakt> &znajomi, vector <int> &listaID)
+{
+    system("cls");
+    string imie;
+    int liczbaZnajomych = znajomi.size();
+    int liczbaPasujacychZnajomych = 0;
+    cout << "Podaj imie znajomego: ";
+    cin >> imie;
+    cout << endl;
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].imie == imie)
+        {
+            liczbaPasujacychZnajomych++;
+            cout << liczbaPasujacychZnajomych << ". ";
+            wypiszZnajomego(znajomi, i);
+            listaID.push_back(znajomi[i].id);
+        }
+    }
+    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
+}
+
+void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi, vector <int> &listaID)
+{
+    system("cls");
+    string nazwisko;
+    int liczbaZnajomych = znajomi.size();
+    int liczbaPasujacychZnajomych = 0;
+    cout << "Podaj nazwisko znajomego: ";
+    cin >> nazwisko;
+    cout << endl;
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].nazwisko == nazwisko)
+        {
+            liczbaPasujacychZnajomych++;
+            cout << liczbaPasujacychZnajomych << ". ";
+            wypiszZnajomego(znajomi, i);
+            listaID.push_back(znajomi[i].id);
+        }
+    }
+    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
+}
+
+void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomi, int modyfikowaneID)
 {
     cout << "Weszlo!" << endl;
-    Sleep(1000);
+/*
+    char czyZmianaAtrybutu;
+    int numerZnajomego;
+
+
+    cout << "Zmien imie (1 - tak, 0 - nie): ";
+    cin >> czyZmianaAtrybutu;
+    if (czyZmianaAtrybutu == '1')
+    {
+        cout << "Podaj nowe imie: ";
+        cin >> znajomi
+    }
+
+
+
+
+
+    cin >> nowyZnajomy.imie;
+    cout << "Podaj nazwisko: ";
+    cin >> nowyZnajomy.nazwisko;
+    cout << "Podaj nr telefonu: ";
+    cin.sync();
+    getline(cin, nowyZnajomy.numerTelefonu);
+    cout << "Podaj e-mail: ";
+    cin >> nowyZnajomy.email;
+    cout << "Podaj adres: ";
+    cin.sync();
+    getline(cin, nowyZnajomy.adres);
+
+    znajomi.push_back(nowyZnajomy);
+    int indeksNowegoZnajomego = znajomi.size() - 1;
+    dopiszZnajomegoDoPilku(znajomi, indeksNowegoZnajomego);
+
+    cout << "Pomyslnie dodano do listy kontaktow!";
+
+
+
+
+
+    Sleep(1000);*/
 }
 
 int wskazZnajomego()
@@ -284,10 +369,10 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi)
             wypiszWszystkichZnajomych(znajomi, listaID);
             break;
         case '2':
-            //wyszukajZnajomegoPoImieniu(znajomi, listaID);
+            wyszukajZnajomegoPoImieniu(znajomi, listaID);
             break;
         case '3':
-            //wyszukajZnajomegoPoNazwisku(znajomi, listaID);
+            wyszukajZnajomegoPoNazwisku(znajomi, listaID);
             break;
         case '4':
             return;
@@ -299,9 +384,9 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi)
 
         numerUzytkownikaDoZmodyfikowania = wskazZnajomego();
 
-        if ((numerUzytkownikaDoZmodyfikowania < listaID.size()) && (numerUzytkownikaDoZmodyfikowania > 0))
+        if ((numerUzytkownikaDoZmodyfikowania <= listaID.size()) && (numerUzytkownikaDoZmodyfikowania > 0))
         {
-            modyfikowaneID = listaID[numerUzytkownikaDoZmodyfikowania];
+            modyfikowaneID = listaID[numerUzytkownikaDoZmodyfikowania - 1];
             wpiszNoweDaneZnajomego(znajomi, modyfikowaneID);
             cout << "Zmodyfikowano dane znajomego!" << endl;
             Sleep(1000);
@@ -319,10 +404,79 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi)
     }
 }
 
+void usunZnajomegoPoID(vector <Kontakt> &znajomi, int usuwaneID)
+{
+    int liczbaZnajomych = znajomi.size();
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].id == usuwaneID)
+        {
+            znajomi.erase(znajomi.begin() + i);
+            break;
+        }
+    }
+}
+
 void usunZnajomego(vector <Kontakt> &znajomi)
 {
-    cout << "Usunieto znajomego z ksiazki adresowej!" << endl;
-    Sleep(1000);
+    vector <int> listaID;
+    char wyborUzytkownika;
+    int usuwaneID, numerUzytkownikaDoUsuniecia;
+
+    if (znajomi.size() == 0)
+    {
+        cout << "Nie ma zapisanych znajomych!" << endl;
+        Sleep(1000);
+    }
+    else
+    {
+        system("cls");
+        cout << "1. Wyswietl wszystkich znajomych i wybierz znajomego do usuniecia" << endl;
+        cout << "2. Wyszukaj znajomego do usuniecia po imieniu" << endl;
+        cout << "3. Wyszukaj znajomego do usuniecia po nazwisku" << endl;
+        cout << "4. Powrot do menu glownego" << endl;
+        cout << endl << "Wybor: ";
+        cin >> wyborUzytkownika;
+
+        switch (wyborUzytkownika)
+        {
+        case '1':
+            wypiszWszystkichZnajomych(znajomi, listaID);
+            break;
+        case '2':
+            wyszukajZnajomegoPoImieniu(znajomi, listaID);
+            break;
+        case '3':
+            wyszukajZnajomegoPoNazwisku(znajomi, listaID);
+            break;
+        case '4':
+            return;
+        default:
+            cout << "Nieprawidlowy wybor!" << endl;
+            Sleep(1000);
+            return;
+        }
+
+        numerUzytkownikaDoUsuniecia = wskazZnajomego();
+
+        if ((numerUzytkownikaDoUsuniecia <= listaID.size()) && (numerUzytkownikaDoUsuniecia > 0))
+        {
+            usuwaneID = listaID[numerUzytkownikaDoUsuniecia - 1];
+            usunZnajomegoPoID(znajomi, usuwaneID);
+            cout << "Usunieto znajomego!" << endl;
+            Sleep(1000);
+        }
+        else if (numerUzytkownikaDoUsuniecia == 0)
+        {
+            cout << "Wybrano powrot do menu glownego." << endl;
+            Sleep(1000);
+        }
+        else
+        {
+            cout << "Nieprawidlowy wybor!" << endl;
+            Sleep(1000);
+        }
+    }
 }
 
 int main()
