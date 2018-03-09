@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <fstream>
 #include <cstdlib>
+#include <vector>
 using namespace std;
 
 struct Kontakt
@@ -11,7 +12,7 @@ struct Kontakt
     string imie, nazwisko, adres, numerTelefonu, email;
 };
 
-void dopiszZnajomegoDoPilku(Kontakt znajomi[], int ktoryZnajomy)
+void dopiszZnajomegoDoPilku(vector <Kontakt> &znajomi, int ktoryZnajomy)
 {
     fstream daneKsiazkiAdresowej;
     daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt", ios::out | ios::app);
@@ -34,12 +35,10 @@ void wyswietlMenuGlowne()
     cout << "9. Zakoncz program" << endl << endl;
 }
 
-int znajdzWolneID(Kontakt znajomi[], int liczbaZnajomych)
+int znajdzWolneID(vector <Kontakt> &znajomi)
 {
-    // funkcja z myślą o rozbudowie programu o kasowanie znajomych
-    // czyli zwalnianie kluczy ID // można też przechowywać osobną
-    // zmienną int ID i inkrementować zawsze o 1 przy dodawaniu znajomych
     int sprawdzaneID = 1;
+    int liczbaZnajomych = znajomi.size();
     if (liczbaZnajomych != 0)
     {
         int i = 0;
@@ -59,42 +58,51 @@ int znajdzWolneID(Kontakt znajomi[], int liczbaZnajomych)
     return sprawdzaneID;
 }
 
-void dodajZnajomego(Kontakt znajomi[], int &liczbaZnajomych)
+void dodajZnajomego(vector <Kontakt> &znajomi)
 {
-    znajomi[liczbaZnajomych].id = znajdzWolneID(znajomi, liczbaZnajomych);
-
     system("cls");
+    Kontakt nowyZnajomy;
+    nowyZnajomy.id = znajdzWolneID(znajomi);
+
     cout << "Podaj imie: ";
-    cin >> znajomi[liczbaZnajomych].imie;
+    cin >> nowyZnajomy.imie;
     cout << "Podaj nazwisko: ";
-    cin >> znajomi[liczbaZnajomych].nazwisko;
+    cin >> nowyZnajomy.nazwisko;
     cout << "Podaj nr telefonu: ";
     cin.sync();
-    getline(cin, znajomi[liczbaZnajomych].numerTelefonu);
+    getline(cin, nowyZnajomy.numerTelefonu);
     cout << "Podaj e-mail: ";
-    cin >> znajomi[liczbaZnajomych].email;
+    cin >> nowyZnajomy.email;
     cout << "Podaj adres: ";
     cin.sync();
-    getline(cin, znajomi[liczbaZnajomych].adres);
+    getline(cin, nowyZnajomy.adres);
 
-    dopiszZnajomegoDoPilku(znajomi, liczbaZnajomych);
+    znajomi.push_back(nowyZnajomy);
+    int indeksNowegoZnajomego = znajomi.size() - 1;
+    dopiszZnajomegoDoPilku(znajomi, indeksNowegoZnajomego);
 
-    liczbaZnajomych += 1;
     cout << "Pomyslnie dodano do listy kontaktow!";
     Sleep(1000);
 }
 
-void wypiszZnajomego(Kontakt znajomi[], int ktoryZnajomy)
+void wypiszZnajomego(const vector <Kontakt> &znajomi, int ktoryZnajomy)
 {
-    cout << znajomi[ktoryZnajomy].imie << " " << znajomi[ktoryZnajomy].nazwisko << endl;
-    cout << "Numer telefonu: " << znajomi[ktoryZnajomy].numerTelefonu << endl;
-    cout << "Adres e-mail: " << znajomi[ktoryZnajomy].email << endl;
-    cout << "Adres: " << znajomi[ktoryZnajomy].adres << endl << endl;
+//    cout << znajomi[ktoryZnajomy].imie << " " << znajomi[ktoryZnajomy].nazwisko << endl;
+//    cout << "Numer telefonu: " << znajomi[ktoryZnajomy].numerTelefonu << endl;
+//    cout << "Adres e-mail: " << znajomi[ktoryZnajomy].email << endl;
+//    cout << "Adres: " << znajomi[ktoryZnajomy].adres << endl << endl;
+    cout << znajomi.at(ktoryZnajomy).imie << " " << znajomi.at(ktoryZnajomy).nazwisko << endl;
+    cout << "Numer telefonu: " << znajomi.at(ktoryZnajomy).numerTelefonu << endl;
+    cout << "Adres e-mail: " << znajomi.at(ktoryZnajomy).email << endl;
+    cout << "Adres: " << znajomi.at(ktoryZnajomy).adres << endl << endl;
+
+
 }
 
-void wypiszWszystkichZnajomych(Kontakt znajomi[], int liczbaZnajomych)
+void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi)
 {
     system("cls");
+    int liczbaZnajomych = znajomi.size();
     if (liczbaZnajomych!=0)
     {
         for (int i=0; i<liczbaZnajomych; i++)
@@ -111,10 +119,11 @@ void wypiszWszystkichZnajomych(Kontakt znajomi[], int liczbaZnajomych)
     getch();
 }
 
-void wyszukajZnajomegoPoImieniu(Kontakt znajomi[], int liczbaZnajomych)
+void wyszukajZnajomegoPoImieniu(vector <Kontakt> &znajomi)
 {
     system("cls");
     string imie;
+    int liczbaZnajomych = znajomi.size();
     int liczbaPasujacychZnajomych = 0;
     cout << "Podaj imie znajomego: ";
     cin >> imie;
@@ -134,10 +143,11 @@ void wyszukajZnajomegoPoImieniu(Kontakt znajomi[], int liczbaZnajomych)
     getch();
 }
 
-void wyszukajZnajomegoPoNazwisku(Kontakt znajomi[], int liczbaZnajomych)
+void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi)
 {
     system("cls");
     string nazwisko;
+    int liczbaZnajomych = znajomi.size();
     int liczbaPasujacychZnajomych = 0;
     cout << "Podaj nazwisko znajomego: ";
     cin >> nazwisko;
@@ -157,10 +167,11 @@ void wyszukajZnajomegoPoNazwisku(Kontakt znajomi[], int liczbaZnajomych)
     getch();
 }
 
-int wczytajZnajomychZPliku(Kontakt znajomi[])
+void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
 {
     fstream daneKsiazkiAdresowej;
     string linia;
+    Kontakt nowyZajomy;
     int numerLinii = 1;
     int liczbaZnajomych = 0;
 
@@ -180,22 +191,23 @@ int wczytajZnajomychZPliku(Kontakt znajomi[])
             switch(numerLinii)
             {
             case 1:
-                znajomi[liczbaZnajomych].id = atoi(linia.c_str());
+                nowyZajomy.id = atoi(linia.c_str());
                 break;
             case 2:
-                znajomi[liczbaZnajomych].imie = linia;
+                nowyZajomy.imie = linia;
                 break;
             case 3:
-                znajomi[liczbaZnajomych].nazwisko = linia;
+                nowyZajomy.nazwisko = linia;
                 break;
             case 4:
-                znajomi[liczbaZnajomych].numerTelefonu = linia;
+                nowyZajomy.numerTelefonu = linia;
                 break;
             case 5:
-                znajomi[liczbaZnajomych].email = linia;
+                nowyZajomy.email = linia;
                 break;
             case 6:
-                znajomi[liczbaZnajomych].adres = linia;
+                nowyZajomy.adres = linia;
+                znajomi.push_back(nowyZajomy);
                 numerLinii = 0;
                 liczbaZnajomych++;
                 break;
@@ -206,15 +218,13 @@ int wczytajZnajomychZPliku(Kontakt znajomi[])
         cout << "Wczytano dane kontaktowe!" << endl;
         Sleep(1000);
     }
-    return liczbaZnajomych;
 }
 
 int main()
 {
-    const int MAX_LICZBA_ZNAJOMYCH = 1000;
-    Kontakt znajomi [MAX_LICZBA_ZNAJOMYCH];
+    vector <Kontakt> znajomi;
     char wyborUzytkownika;
-    int liczbaZnajomych = wczytajZnajomychZPliku(znajomi);
+    wczytajZnajomychZPliku(znajomi);
 
     while(1)
     {
@@ -224,18 +234,19 @@ int main()
         switch (wyborUzytkownika)
         {
         case '1':
-            dodajZnajomego(znajomi, liczbaZnajomych);
+            dodajZnajomego(znajomi);
             break;
         case '2':
-            wyszukajZnajomegoPoImieniu(znajomi, liczbaZnajomych);
+            wyszukajZnajomegoPoImieniu(znajomi);
             break;
         case '3':
-            wyszukajZnajomegoPoNazwisku(znajomi, liczbaZnajomych);
+            wyszukajZnajomegoPoNazwisku(znajomi);
             break;
         case '4':
-            wypiszWszystkichZnajomych(znajomi, liczbaZnajomych);
+            wypiszWszystkichZnajomych(znajomi);
             break;
         case '9':
+            cout << "Wyjscie z programu!" << endl;
             exit(0);
         default:
             continue;
