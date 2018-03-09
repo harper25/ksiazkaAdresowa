@@ -6,6 +6,8 @@
 #include <vector>
 using namespace std;
 
+
+
 struct Kontakt
 {
     int id;
@@ -44,7 +46,7 @@ int znajdzWolneID(vector <Kontakt> &znajomi)
     if (liczbaZnajomych != 0)
     {
         int i = 0;
-        while(i<liczbaZnajomych)
+        while(i < liczbaZnajomych)
         {
             if (znajomi[i].id == sprawdzaneID)
             {
@@ -291,47 +293,56 @@ void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi, vector <int> &listaI
 
 void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomi, int modyfikowaneID)
 {
-    cout << "Weszlo!" << endl;
-/*
     char czyZmianaAtrybutu;
     int numerZnajomego;
 
+    int liczbaZnajomych = znajomi.size();
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].id == modyfikowaneID)
+        {
+            numerZnajomego = i;
+            break;
+        }
+    }
 
     cout << "Zmien imie (1 - tak, 0 - nie): ";
     cin >> czyZmianaAtrybutu;
     if (czyZmianaAtrybutu == '1')
     {
         cout << "Podaj nowe imie: ";
-        cin >> znajomi
+        cin >> znajomi[numerZnajomego].imie;
     }
-
-
-
-
-
-    cin >> nowyZnajomy.imie;
-    cout << "Podaj nazwisko: ";
-    cin >> nowyZnajomy.nazwisko;
-    cout << "Podaj nr telefonu: ";
-    cin.sync();
-    getline(cin, nowyZnajomy.numerTelefonu);
-    cout << "Podaj e-mail: ";
-    cin >> nowyZnajomy.email;
-    cout << "Podaj adres: ";
-    cin.sync();
-    getline(cin, nowyZnajomy.adres);
-
-    znajomi.push_back(nowyZnajomy);
-    int indeksNowegoZnajomego = znajomi.size() - 1;
-    dopiszZnajomegoDoPilku(znajomi, indeksNowegoZnajomego);
-
-    cout << "Pomyslnie dodano do listy kontaktow!";
-
-
-
-
-
-    Sleep(1000);*/
+    cout << "Zmien nazwisko (1 - tak, 0 - nie): ";
+    cin >> czyZmianaAtrybutu;
+    if (czyZmianaAtrybutu == '1')
+    {
+        cout << endl << "Podaj nowe nazwisko: ";
+        cin >> znajomi[numerZnajomego].nazwisko;
+    }
+    cout << "Zmien numer telefonu (1 - tak, 0 - nie): ";
+    cin >> czyZmianaAtrybutu;
+    if (czyZmianaAtrybutu == '1')
+    {
+        cout << "Podaj nowy numer telefonu: ";
+        cin.sync();
+        getline(cin,znajomi[numerZnajomego].numerTelefonu);
+    }
+    cout << "Zmien adres email (1 - tak, 0 - nie): ";
+    cin >> czyZmianaAtrybutu;
+    if (czyZmianaAtrybutu == '1')
+    {
+        cout << "Podaj nowy adres email: ";
+        cin >> znajomi[numerZnajomego].email;
+    }
+    cout << "Zmien adres (1 - tak, 0 - nie): ";
+    cin >> czyZmianaAtrybutu;
+    if (czyZmianaAtrybutu == '1')
+    {
+        cout << "Podaj nowy adres: ";
+        cin.sync();
+        getline(cin,znajomi[numerZnajomego].adres);
+    }
 }
 
 int wskazZnajomego()
@@ -382,24 +393,32 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi)
             return;
         }
 
-        numerUzytkownikaDoZmodyfikowania = wskazZnajomego();
+        if (!listaID.empty())
+        {
+            numerUzytkownikaDoZmodyfikowania = wskazZnajomego();
 
-        if ((numerUzytkownikaDoZmodyfikowania <= listaID.size()) && (numerUzytkownikaDoZmodyfikowania > 0))
-        {
-            modyfikowaneID = listaID[numerUzytkownikaDoZmodyfikowania - 1];
-            wpiszNoweDaneZnajomego(znajomi, modyfikowaneID);
-            cout << "Zmodyfikowano dane znajomego!" << endl;
-            Sleep(1000);
-        }
-        else if (numerUzytkownikaDoZmodyfikowania == 0)
-        {
-            cout << "Wybrano powrot do menu glownego." << endl;
-            Sleep(1000);
+            if ((numerUzytkownikaDoZmodyfikowania <= listaID.size()) && (numerUzytkownikaDoZmodyfikowania > 0))
+            {
+                modyfikowaneID = listaID[numerUzytkownikaDoZmodyfikowania - 1];
+                wpiszNoweDaneZnajomego(znajomi, modyfikowaneID);
+                cout << "Zmodyfikowano dane znajomego!" << endl;
+                Sleep(1000);
+            }
+            else if (numerUzytkownikaDoZmodyfikowania == 0)
+            {
+                cout << "Wybrano powrot do menu glownego." << endl;
+                Sleep(1000);
+            }
+            else
+            {
+                cout << "Nieprawidlowy wybor!" << endl;
+                Sleep(1000);
+            }
         }
         else
         {
-            cout << "Nieprawidlowy wybor!" << endl;
-            Sleep(1000);
+            cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
+            getch();
         }
     }
 }
@@ -457,24 +476,32 @@ void usunZnajomego(vector <Kontakt> &znajomi)
             return;
         }
 
-        numerUzytkownikaDoUsuniecia = wskazZnajomego();
+        if (!listaID.empty())
+        {
+            numerUzytkownikaDoUsuniecia = wskazZnajomego();
 
-        if ((numerUzytkownikaDoUsuniecia <= listaID.size()) && (numerUzytkownikaDoUsuniecia > 0))
-        {
-            usuwaneID = listaID[numerUzytkownikaDoUsuniecia - 1];
-            usunZnajomegoPoID(znajomi, usuwaneID);
-            cout << "Usunieto znajomego!" << endl;
-            Sleep(1000);
-        }
-        else if (numerUzytkownikaDoUsuniecia == 0)
-        {
-            cout << "Wybrano powrot do menu glownego." << endl;
-            Sleep(1000);
+            if ((numerUzytkownikaDoUsuniecia <= listaID.size()) && (numerUzytkownikaDoUsuniecia > 0))
+            {
+                usuwaneID = listaID[numerUzytkownikaDoUsuniecia - 1];
+                usunZnajomegoPoID(znajomi, usuwaneID);
+                cout << "Usunieto znajomego!" << endl;
+                Sleep(1000);
+            }
+            else if (numerUzytkownikaDoUsuniecia == 0)
+            {
+                cout << "Wybrano powrot do menu glownego." << endl;
+                Sleep(1000);
+            }
+            else
+            {
+                cout << "Nieprawidlowy wybor!" << endl;
+                Sleep(1000);
+            }
         }
         else
         {
-            cout << "Nieprawidlowy wybor!" << endl;
-            Sleep(1000);
+            cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
+            getch();
         }
     }
 }
