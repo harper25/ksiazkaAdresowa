@@ -31,7 +31,9 @@ void wyswietlMenuGlowne()
     cout << "1. Dodaj znajomego" << endl;
     cout << "2. Wyszukaj znajomego (wpisz imie)" << endl;
     cout << "3. Wyszukaj znajomego (wpisz nazwisko)" << endl;
-    cout << "4. Wyswietl wszystkich znajomych" << endl;
+    cout << "4. Zmodyfikuj znajomego" << endl;
+    cout << "5. Usun znajomego" << endl;
+    cout << "6. Wyswietl wszystkich znajomych" << endl;
     cout << "9. Zakoncz program" << endl << endl;
 }
 
@@ -85,81 +87,6 @@ void dodajZnajomego(vector <Kontakt> &znajomi)
     Sleep(1000);
 }
 
-void wypiszZnajomego(const vector <Kontakt> &znajomi, int ktoryZnajomy)
-{
-    cout << znajomi.at(ktoryZnajomy).imie << " " << znajomi.at(ktoryZnajomy).nazwisko << endl;
-    cout << "Numer telefonu: " << znajomi.at(ktoryZnajomy).numerTelefonu << endl;
-    cout << "Adres e-mail: " << znajomi.at(ktoryZnajomy).email << endl;
-    cout << "Adres: " << znajomi.at(ktoryZnajomy).adres << endl << endl;
-}
-
-void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi)
-{
-    system("cls");
-    int liczbaZnajomych = znajomi.size();
-    if (liczbaZnajomych!=0)
-    {
-        for (int i=0; i<liczbaZnajomych; i++)
-        {
-            cout << i+1 << ". ";
-            wypiszZnajomego(znajomi, i);
-        }
-    }
-    else
-    {
-        cout << "Nie ma zapisanych znajomych!" << endl;
-    }
-    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
-    getch();
-}
-
-void wyszukajZnajomegoPoImieniu(vector <Kontakt> &znajomi)
-{
-    system("cls");
-    string imie;
-    int liczbaZnajomych = znajomi.size();
-    int liczbaPasujacychZnajomych = 0;
-    cout << "Podaj imie znajomego: ";
-    cin >> imie;
-    cout << endl;
-
-    for (int i=0; i<liczbaZnajomych; i++)
-    {
-        if (znajomi[i].imie == imie)
-        {
-            liczbaPasujacychZnajomych++;
-            cout << liczbaPasujacychZnajomych << ". ";
-            wypiszZnajomego(znajomi, i);
-        }
-    }
-    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
-    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
-    getch();
-}
-
-void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi)
-{
-    system("cls");
-    string nazwisko;
-    int liczbaZnajomych = znajomi.size();
-    int liczbaPasujacychZnajomych = 0;
-    cout << "Podaj nazwisko znajomego: ";
-    cin >> nazwisko;
-    cout << endl;
-
-    for (int i=0; i<liczbaZnajomych; i++)
-    {
-        if (znajomi[i].nazwisko == nazwisko)
-        {
-            liczbaPasujacychZnajomych++;
-            cout << liczbaPasujacychZnajomych << ". ";
-            wypiszZnajomego(znajomi, i);
-        }
-    }
-    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
-    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
-    getch();
-}
 
 void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
 {
@@ -183,6 +110,8 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
         cout << "Wczytywanie znajomych. Prosze czekac..." << endl;
         while(getline(daneKsiazkiAdresowej,linia))
         {
+            // pobierzDaneJednegoZnajomego();
+
             staraPozycjaSeparatora = -1;
             nowaPozycjaSeparatora = linia.find(separator, 0);
             numerAtrybutuZnajomego = 0;
@@ -190,7 +119,7 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
             while(nowaPozycjaSeparatora != string::npos)
             {
                 numerAtrybutuZnajomego++;
-                atrybutZajomego = linia.substr(staraPozycjaSeparatora+1,nowaPozycjaSeparatora-staraPozycjaSeparatora-1);
+                atrybutZajomego = linia.substr(staraPozycjaSeparatora + 1,nowaPozycjaSeparatora - staraPozycjaSeparatora - 1);
 
                 switch(numerAtrybutuZnajomego)
                 {
@@ -224,6 +153,178 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
     }
 }
 
+void wypiszZnajomego(const vector <Kontakt> &znajomi, int ktoryZnajomy)
+{
+    cout << znajomi.at(ktoryZnajomy).imie << " " << znajomi.at(ktoryZnajomy).nazwisko << endl;
+    cout << "Numer telefonu: " << znajomi.at(ktoryZnajomy).numerTelefonu << endl;
+    cout << "Adres e-mail: " << znajomi.at(ktoryZnajomy).email << endl;
+    cout << "Adres: " << znajomi.at(ktoryZnajomy).adres << endl << endl;
+}
+
+void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi)
+{
+    system("cls");
+    int liczbaZnajomych = znajomi.size();
+    if (liczbaZnajomych != 0)
+    {
+        for (int i = 0; i < liczbaZnajomych; i++)
+        {
+            cout << i + 1 << ". ";
+            wypiszZnajomego(znajomi, i);
+        }
+    }
+    else
+    {
+        cout << "Nie ma zapisanych znajomych!" << endl;
+    }
+    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
+    getch();
+}
+
+void wyszukajZnajomegoPoImieniu(vector <Kontakt> &znajomi)
+{
+    system("cls");
+    string imie;
+    int liczbaZnajomych = znajomi.size();
+    int liczbaPasujacychZnajomych = 0;
+    cout << "Podaj imie znajomego: ";
+    cin >> imie;
+    cout << endl;
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].imie == imie)
+        {
+            liczbaPasujacychZnajomych++;
+            cout << liczbaPasujacychZnajomych << ". ";
+            wypiszZnajomego(znajomi, i);
+        }
+    }
+    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
+
+    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
+    getch();
+}
+
+void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi)
+{
+    system("cls");
+    string nazwisko;
+    int liczbaZnajomych = znajomi.size();
+    int liczbaPasujacychZnajomych = 0;
+    cout << "Podaj nazwisko znajomego: ";
+    cin >> nazwisko;
+    cout << endl;
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        if (znajomi[i].nazwisko == nazwisko)
+        {
+            liczbaPasujacychZnajomych++;
+            cout << liczbaPasujacychZnajomych << ". ";
+            wypiszZnajomego(znajomi, i);
+        }
+    }
+    cout << "Koniec wyszukiwania. Znaleziono znajomych: " << liczbaPasujacychZnajomych << endl;
+    cout << "Wcisnij dowolny przycisk, aby wrocic do glownego menu...";
+    getch();
+}
+
+void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi, vector <int> &listaID)
+{
+    system("cls");
+    int liczbaZnajomych = znajomi.size();
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        cout << i + 1 << ". ";
+        wypiszZnajomego(znajomi, i);
+        listaID.push_back(znajomi[i].id);
+    }
+}
+
+void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomiznajomi, int modyfikowaneID)
+{
+    cout << "Weszlo!" << endl;
+    Sleep(1000);
+}
+
+int wskazZnajomego()
+{
+    int numerWybranegoUzytkownika;
+    cout << "Podaj numer znajomego (0 - powrot do menu): ";
+    cin >> numerWybranegoUzytkownika;
+    return numerWybranegoUzytkownika;
+}
+
+void zmodyfikujZnajomego(vector <Kontakt> &znajomi)
+{
+    vector <int> listaID;
+    char wyborUzytkownika;
+    int modyfikowaneID, numerUzytkownikaDoZmodyfikowania;
+
+    if (znajomi.size() == 0)
+    {
+        cout << "Nie ma zapisanych znajomych!" << endl;
+        Sleep(1000);
+    }
+    else
+    {
+        system("cls");
+        cout << "1. Wyswietl wszystkich znajomych i wybierz znajomego do modyfikacji" << endl;
+        cout << "2. Wyszukaj znajomego do modyfikacji po imieniu" << endl;
+        cout << "3. Wyszukaj znajomego do modyfikacji po nazwisku" << endl;
+        cout << "4. Powrot do menu glownego" << endl;
+        cout << endl << "Wybor: ";
+        cin >> wyborUzytkownika;
+
+        switch (wyborUzytkownika)
+        {
+        case '1':
+            wypiszWszystkichZnajomych(znajomi, listaID);
+            break;
+        case '2':
+            //wyszukajZnajomegoPoImieniu(znajomi, listaID);
+            break;
+        case '3':
+            //wyszukajZnajomegoPoNazwisku(znajomi, listaID);
+            break;
+        case '4':
+            return;
+        default:
+            cout << "Nieprawidlowy wybor!" << endl;
+            Sleep(1000);
+            return;
+        }
+
+        numerUzytkownikaDoZmodyfikowania = wskazZnajomego();
+
+        if ((numerUzytkownikaDoZmodyfikowania < listaID.size()) && (numerUzytkownikaDoZmodyfikowania > 0))
+        {
+            modyfikowaneID = listaID[numerUzytkownikaDoZmodyfikowania];
+            wpiszNoweDaneZnajomego(znajomi, modyfikowaneID);
+            cout << "Zmodyfikowano dane znajomego!" << endl;
+            Sleep(1000);
+        }
+        else if (numerUzytkownikaDoZmodyfikowania == 0)
+        {
+            cout << "Wybrano powrot do menu glownego." << endl;
+            Sleep(1000);
+        }
+        else
+        {
+            cout << "Nieprawidlowy wybor!" << endl;
+            Sleep(1000);
+        }
+    }
+}
+
+void usunZnajomego(vector <Kontakt> &znajomi)
+{
+    cout << "Usunieto znajomego z ksiazki adresowej!" << endl;
+    Sleep(1000);
+}
+
 int main()
 {
     vector <Kontakt> znajomi;
@@ -233,6 +334,7 @@ int main()
     while(1)
     {
         wyswietlMenuGlowne();
+        cout << "Wybor: ";
         cin >> wyborUzytkownika;
 
         switch (wyborUzytkownika)
@@ -247,6 +349,12 @@ int main()
             wyszukajZnajomegoPoNazwisku(znajomi);
             break;
         case '4':
+            zmodyfikujZnajomego(znajomi);
+            break;
+        case '5':
+            usunZnajomego(znajomi);
+            break;
+        case '6':
             wypiszWszystkichZnajomych(znajomi);
             break;
         case '9':
