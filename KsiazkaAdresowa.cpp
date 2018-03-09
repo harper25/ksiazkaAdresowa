@@ -16,12 +16,12 @@ void dopiszZnajomegoDoPilku(vector <Kontakt> &znajomi, int ktoryZnajomy)
 {
     fstream daneKsiazkiAdresowej;
     daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt", ios::out | ios::app);
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].id << endl;
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].imie << endl;
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].nazwisko << endl;
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].numerTelefonu << endl;
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].email << endl;
-    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].adres << endl;
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].id << "|";
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].imie << "|";
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].nazwisko << "|";
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].numerTelefonu << "|";
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].email << "|";
+    daneKsiazkiAdresowej << znajomi[ktoryZnajomy].adres <<  "|" << endl;
     daneKsiazkiAdresowej.close();
 }
 
@@ -87,16 +87,10 @@ void dodajZnajomego(vector <Kontakt> &znajomi)
 
 void wypiszZnajomego(const vector <Kontakt> &znajomi, int ktoryZnajomy)
 {
-//    cout << znajomi[ktoryZnajomy].imie << " " << znajomi[ktoryZnajomy].nazwisko << endl;
-//    cout << "Numer telefonu: " << znajomi[ktoryZnajomy].numerTelefonu << endl;
-//    cout << "Adres e-mail: " << znajomi[ktoryZnajomy].email << endl;
-//    cout << "Adres: " << znajomi[ktoryZnajomy].adres << endl << endl;
     cout << znajomi.at(ktoryZnajomy).imie << " " << znajomi.at(ktoryZnajomy).nazwisko << endl;
     cout << "Numer telefonu: " << znajomi.at(ktoryZnajomy).numerTelefonu << endl;
     cout << "Adres e-mail: " << znajomi.at(ktoryZnajomy).email << endl;
     cout << "Adres: " << znajomi.at(ktoryZnajomy).adres << endl << endl;
-
-
 }
 
 void wypiszWszystkichZnajomych(vector <Kontakt> &znajomi)
@@ -170,14 +164,15 @@ void wyszukajZnajomegoPoNazwisku(vector <Kontakt> &znajomi)
 void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
 {
     fstream daneKsiazkiAdresowej;
-    string linia;
+    string linia, atrybutZajomego;
     Kontakt nowyZajomy;
-    int numerLinii = 1;
-    int liczbaZnajomych = 0;
+    int numerAtrybutuZnajomego = 1;
+    int staraPozycjaSeparatora, nowaPozycjaSeparatora;
+    string separator = "|";
 
     daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt",ios::in);
 
-    if (daneKsiazkiAdresowej.good()==false)
+    if (daneKsiazkiAdresowej.good() == false)
     {
         cout << "Nie udalo sie wczytac danych kontaktowych!" << endl;
         cout << "Wcisnij dowolny przycisk, aby przejsc do glownego menu...";
@@ -188,31 +183,40 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
         cout << "Wczytywanie znajomych. Prosze czekac..." << endl;
         while(getline(daneKsiazkiAdresowej,linia))
         {
-            switch(numerLinii)
+            staraPozycjaSeparatora = -1;
+            nowaPozycjaSeparatora = linia.find(separator, 0);
+            numerAtrybutuZnajomego = 0;
+
+            while(nowaPozycjaSeparatora != string::npos)
             {
-            case 1:
-                nowyZajomy.id = atoi(linia.c_str());
-                break;
-            case 2:
-                nowyZajomy.imie = linia;
-                break;
-            case 3:
-                nowyZajomy.nazwisko = linia;
-                break;
-            case 4:
-                nowyZajomy.numerTelefonu = linia;
-                break;
-            case 5:
-                nowyZajomy.email = linia;
-                break;
-            case 6:
-                nowyZajomy.adres = linia;
-                znajomi.push_back(nowyZajomy);
-                numerLinii = 0;
-                liczbaZnajomych++;
-                break;
+                numerAtrybutuZnajomego++;
+                atrybutZajomego = linia.substr(staraPozycjaSeparatora+1,nowaPozycjaSeparatora-staraPozycjaSeparatora-1);
+
+                switch(numerAtrybutuZnajomego)
+                {
+                case 1:
+                    nowyZajomy.id = atoi(atrybutZajomego.c_str());
+                    break;
+                case 2:
+                    nowyZajomy.imie = atrybutZajomego;
+                    break;
+                case 3:
+                    nowyZajomy.nazwisko = atrybutZajomego;
+                    break;
+                case 4:
+                    nowyZajomy.numerTelefonu = atrybutZajomego;
+                    break;
+                case 5:
+                    nowyZajomy.email = atrybutZajomego;
+                    break;
+                case 6:
+                    nowyZajomy.adres = atrybutZajomego;
+                    znajomi.push_back(nowyZajomy);
+                    break;
+                }
+                staraPozycjaSeparatora = nowaPozycjaSeparatora;
+                nowaPozycjaSeparatora = linia.find(separator,staraPozycjaSeparatora+1);
             }
-            numerLinii++;
         }
         daneKsiazkiAdresowej.close();
         cout << "Wczytano dane kontaktowe!" << endl;
