@@ -6,6 +6,93 @@
 #include <vector>
 using namespace std;
 
+struct Uzytkownik
+{
+    int id;
+    string nazwa, haslo;
+};
+
+int rejestracja(Uzytkownik uzytkownicy[], int iloscUzytkownikow)
+{
+    string nazwa, haslo;
+    cout << "Podaj nazwe uzytkownika: ";
+    cin >> nazwa;
+    int i = 0;
+    while (i<iloscUzytkownikow)
+    {
+        if (uzytkownicy[i].nazwa == nazwa)
+        {
+            cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+            cin >> nazwa;
+            i = 0;
+        }
+        else
+        {
+            i++;
+        }
+    }
+    cout << "Podaj haslo: ";
+    cin >> haslo;
+    uzytkownicy[iloscUzytkownikow].nazwa = nazwa;
+    uzytkownicy[iloscUzytkownikow].haslo = haslo;
+    uzytkownicy[iloscUzytkownikow].id = iloscUzytkownikow+1; // id liczone od 1
+    cout << "Konto zalozone" << endl;
+    Sleep(1000);
+    return iloscUzytkownikow+1;
+}
+
+int logowanie(Uzytkownik uzytkownicy[], int iloscUzytkownikow)
+{
+    string nazwa, haslo;
+    cout << "Podaj nazwe uzytkownika: ";
+    cin >> nazwa;
+    int i = 0;
+    while(i<iloscUzytkownikow)
+    {
+        if (uzytkownicy[i].nazwa == nazwa)
+        {
+            for (int proby=0; proby<3; proby++)
+            {
+                cout << "Podaj haslo. Pozostalo prob " << 3-proby << ": ";
+                cin >> haslo;
+                if (uzytkownicy[i].haslo == haslo)
+                {
+                    cout << "Zalogowales sie." << endl;
+                    Sleep(1000);
+                    return uzytkownicy[i].id;
+                }
+            }
+            cout << "Podales 3 razy bledne haslo. Poczekaj 3 sekundy przed kolejna proba" << endl;
+            Sleep(1000);
+            return 0;
+        }
+        i++;
+    }
+    cout << "Nie ma takiego uzytkownika" << endl;
+    Sleep(1000);
+    return 0;
+}
+
+void zmianaHasla(Uzytkownik uzytkownicy[], int iloscUzytkownikow, int idZalogowanegoUzytkownika)
+{
+    string haslo;
+    cout << "Podaj nowe haslo: ";
+    cin >> haslo;
+    // po co tak to nie wiem...
+    for (int i=0; i<iloscUzytkownikow; i++)
+    {
+        if (uzytkownicy[i].id == idZalogowanegoUzytkownika)
+        {
+            uzytkownicy[i].haslo = haslo;
+            cout << "Haslo zostalo zmienione" << endl;
+            Sleep(1500);
+        }
+    }
+}
+
+
+
+
 struct Kontakt
 {
     int id;
@@ -40,7 +127,8 @@ void wyswietlMenuGlowne()
     cout << "4. Zmodyfikuj znajomego" << endl;
     cout << "5. Usun znajomego" << endl;
     cout << "6. Wyswietl wszystkich znajomych" << endl;
-    cout << "9. Zakoncz program" << endl << endl;
+    cout << "7. Zmiana hasla" << endl;
+    cout << "8. Wylogowanie" << endl << endl;
 }
 
 void wyswietlKomunikatPowrotMenuGlowne()
@@ -275,6 +363,7 @@ void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomi, int modyfikowaneID)
         }
     }
 
+
     cout << "Zmien imie (1 - tak, 0 - nie): ";
     cin >> czyZmianaAtrybutu;
     if (czyZmianaAtrybutu == '1')
@@ -485,47 +574,84 @@ void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
 
 int main()
 {
+    Uzytkownik uzytkownicy[100];
+//    vector <Uzytkownik> uzytkownicy;
+    int idZalogowanegoUzytkownika = 0;
+    int iloscUzytkownikow = 0;
     vector <Kontakt> znajomi;
     vector <int> listaID;
     char wyborUzytkownika;
-    wczytajZnajomychZPliku(znajomi);
 
     while(1)
     {
-        wyswietlMenuGlowne();
-        cout << "Wybor: ";
-        cin >> wyborUzytkownika;
-
-        switch (wyborUzytkownika)
+        if (idZalogowanegoUzytkownika == 0)
         {
-        case '1':
-            dodajZnajomego(znajomi);
-            break;
-        case '2':
-            wyszukajZnajomegoPoImieniu(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '3':
-            wyszukajZnajomegoPoNazwisku(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '4':
-            zmodyfikujZnajomego(znajomi, listaID);
-            break;
-        case '5':
-            usunZnajomego(znajomi, listaID);
-            break;
-        case '6':
-            wypiszWszystkichZnajomych(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '9':
-            zaktualizujPlikZDanymi(znajomi);
-            cout << "Wyjscie z programu!" << endl;
-            exit(0);
-        default:
-            continue;
+            system("cls");
+            cout << "Ksiazka adresowa" << endl;
+            cout << "1. Rejestracja" << endl;
+            cout << "2. Logowanie" << endl;
+            cout << "9. Zakoncz program" << endl;
+            cin >> wyborUzytkownika;
+
+            switch (wyborUzytkownika)
+            {
+            case '1':
+                iloscUzytkownikow = rejestracja(uzytkownicy, iloscUzytkownikow);
+                // zaktualizujPlikZUzytkownikami(uzytkownicy);
+                break;
+            case '2':
+                idZalogowanegoUzytkownika = logowanie(uzytkownicy, iloscUzytkownikow);
+                // zaktualizujPlikZUzytkownikami(uzytkownicy);
+                wczytajZnajomychZPliku(znajomi);
+                break;
+            case '9':
+                cout << "Wyjscie z programu!" << endl;
+                exit(0);
+            default:
+                cout << "Nieprawidlowy wybor!" << endl;
+            }
+        }
+        else
+        {
+            wyswietlMenuGlowne();
+            cout << "Wybor: ";
+            cin >> wyborUzytkownika;
+
+            switch (wyborUzytkownika)
+            {
+            case '1':
+                dodajZnajomego(znajomi);
+                break;
+            case '2':
+                wyszukajZnajomegoPoImieniu(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '3':
+                wyszukajZnajomegoPoNazwisku(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '4':
+                zmodyfikujZnajomego(znajomi, listaID);
+                zaktualizujPlikZDanymi(znajomi);
+                break;
+            case '5':
+                usunZnajomego(znajomi, listaID);
+                zaktualizujPlikZDanymi(znajomi);
+                break;
+            case '6':
+                wypiszWszystkichZnajomych(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '7':
+                zmianaHasla(uzytkownicy, iloscUzytkownikow, idZalogowanegoUzytkownika);
+                break;
+            case '8':
+                idZalogowanegoUzytkownika = 0;
+                znajomi.clear();
+                break;
+            default:
+                continue;
+            }
         }
     }
-    return 0;
 }
