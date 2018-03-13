@@ -4,44 +4,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 using namespace std;
-
-struct Kontakt
-{
-    int id;
-    string imie, nazwisko, adres, numerTelefonu, email;
-};
-
-void zaktualizujPlikZDanymi(vector <Kontakt> &znajomi)
-{
-    fstream daneKsiazkiAdresowej;
-    daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt", ios::out);
-    int liczbaZnajomych = znajomi.size();
-
-    for (int i = 0; i < liczbaZnajomych; i++)
-    {
-        daneKsiazkiAdresowej << znajomi[i].id << "|";
-        daneKsiazkiAdresowej << znajomi[i].imie << "|";
-        daneKsiazkiAdresowej << znajomi[i].nazwisko << "|";
-        daneKsiazkiAdresowej << znajomi[i].numerTelefonu << "|";
-        daneKsiazkiAdresowej << znajomi[i].email << "|";
-        daneKsiazkiAdresowej << znajomi[i].adres <<  "|" << endl;
-    }
-    daneKsiazkiAdresowej.close();
-}
-
-
-void wyswietlMenuGlowne()
-{
-    system("cls");
-    cout << "1. Dodaj znajomego" << endl;
-    cout << "2. Wyszukaj znajomego (wpisz imie)" << endl;
-    cout << "3. Wyszukaj znajomego (wpisz nazwisko)" << endl;
-    cout << "4. Zmodyfikuj znajomego" << endl;
-    cout << "5. Usun znajomego" << endl;
-    cout << "6. Wyswietl wszystkich znajomych" << endl;
-    cout << "9. Zakoncz program" << endl << endl;
-}
 
 void wyswietlKomunikatPowrotMenuGlowne()
 {
@@ -49,62 +13,172 @@ void wyswietlKomunikatPowrotMenuGlowne()
     getch();
 }
 
-void wyswietlMenuWprowadzaniaZmian()
+struct Uzytkownik
 {
-    cout << "1. Wyswietl wszystkie kontakty i wybierz znajomego" << endl;
-    cout << "2. Wyszukaj znajomego po imieniu" << endl;
-    cout << "3. Wyszukaj znajomego po nazwisku" << endl;
-    cout << "4. Powrot do menu glownego" << endl;
-    cout << endl << "Wybor: ";
+    int id;
+    string nazwa, haslo;
+};
+
+void zaktualizujPlikZUzytkownikami(vector <Uzytkownik> &uzytkownicy)
+{
+    fstream daneUzytkownikow;
+    daneUzytkownikow.open("daneUzytkownikow.txt", ios::out);
+    int liczbaUzytkownikow = uzytkownicy.size();
+
+    for (int i = 0; i < liczbaUzytkownikow; i++)
+    {
+        daneUzytkownikow << uzytkownicy[i].id << "|";
+        daneUzytkownikow << uzytkownicy[i].nazwa << "|";
+        daneUzytkownikow << uzytkownicy[i].haslo << "|" << endl;
+    }
+    daneUzytkownikow.close();
 }
 
-int znajdzWolneID(vector <Kontakt> &znajomi)
+void pobierzDaneJednegoUzytkownika(string &linia, Uzytkownik &nowyUzytkownik)
 {
-    int sprawdzaneID = 1;
-    int liczbaZnajomych = znajomi.size();
-    if (liczbaZnajomych != 0)
+    string separator = "|";
+    string atrybutUzytkownika;
+    int staraPozycjaSeparatora = -1;
+    int nowaPozycjaSeparatora = linia.find(separator, 0);
+    int numerAtrybutuUzytkownika = 0;
+
+    while(nowaPozycjaSeparatora != string::npos)
     {
-        int i = 0;
-        while(i < liczbaZnajomych)
+        numerAtrybutuUzytkownika++;
+        atrybutUzytkownika = linia.substr(staraPozycjaSeparatora + 1,nowaPozycjaSeparatora - staraPozycjaSeparatora - 1);
+
+        switch(numerAtrybutuUzytkownika)
         {
-            if (znajomi[i].id == sprawdzaneID)
-            {
-                sprawdzaneID++;
-                i = 0;
-            }
-            else
-            {
-                i++;
-            }
+        case 1:
+            nowyUzytkownik.id = atoi(atrybutUzytkownika.c_str());
+            break;
+        case 2:
+            nowyUzytkownik.nazwa = atrybutUzytkownika;
+            break;
+        case 3:
+            nowyUzytkownik.haslo = atrybutUzytkownika;
+            break;
+        }
+        staraPozycjaSeparatora = nowaPozycjaSeparatora;
+        nowaPozycjaSeparatora = linia.find(separator,staraPozycjaSeparatora+1);
+    }
+}
+
+void wczytajUzytkownikowZPliku(vector <Uzytkownik> &uzytkownicy)
+{
+    fstream daneUzytkownikow;
+    string linia;
+    Uzytkownik nowyUzytkownik;
+
+    daneUzytkownikow.open("daneUzytkownikow.txt",ios::in);
+
+    if (daneUzytkownikow.good() == false)
+    {
+        cout << "Nie udalo sie wczytac danych uzytkownikow!" << endl;
+        wyswietlKomunikatPowrotMenuGlowne();
+    }
+    else
+    {
+        while(getline(daneUzytkownikow,linia))
+        {
+            pobierzDaneJednegoUzytkownika(linia, nowyUzytkownik);
+            uzytkownicy.push_back(nowyUzytkownik);
+        }
+        daneUzytkownikow.close();
+    }
+}
+
+void rejestracja(vector <Uzytkownik> &uzytkownicy)
+{
+    string nazwa, haslo;
+    Uzytkownik nowyUzytkownik;
+    int iloscUzytkownikow = uzytkownicy.size();
+    cout << "Podaj nazwe uzytkownika: ";
+    cin.sync();
+    getline(cin, nazwa);
+    int i = 0;
+    while (i < iloscUzytkownikow)
+    {
+        if (uzytkownicy[i].nazwa == nazwa)
+        {
+            cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+            cin.sync();
+            getline(cin, nazwa);
+            i = 0;
+        }
+        else
+        {
+            i++;
         }
     }
-    return sprawdzaneID;
-}
-
-void dodajZnajomego(vector <Kontakt> &znajomi)
-{
-    system("cls");
-    Kontakt nowyZnajomy;
-    nowyZnajomy.id = znajdzWolneID(znajomi);
-
-    cout << "Podaj imie: ";
-    cin >> nowyZnajomy.imie;
-    cout << "Podaj nazwisko: ";
-    cin >> nowyZnajomy.nazwisko;
-    cout << "Podaj nr telefonu: ";
-    cin.sync();
-    getline(cin, nowyZnajomy.numerTelefonu);
-    cout << "Podaj e-mail: ";
-    cin >> nowyZnajomy.email;
-    cout << "Podaj adres: ";
-    cin.sync();
-    getline(cin, nowyZnajomy.adres);
-
-    znajomi.push_back(nowyZnajomy);
-
-    cout << "Pomyslnie dodano do listy kontaktow!";
+    cout << "Podaj haslo: ";
+    cin >> haslo;
+    nowyUzytkownik.nazwa = nazwa;
+    nowyUzytkownik.haslo = haslo;
+    nowyUzytkownik.id = iloscUzytkownikow + 1;
+    uzytkownicy.push_back(nowyUzytkownik);
+    cout << "Konto zalozone" << endl;
     Sleep(1000);
 }
+
+int logowanie(vector <Uzytkownik> &uzytkownicy)
+{
+    string nazwa, haslo;
+    int iloscUzytkownikow = uzytkownicy.size();
+    cout << "Podaj nazwe uzytkownika: ";
+    cin.sync();
+    getline(cin, nazwa);
+    int i = 0;
+    while(i < iloscUzytkownikow)
+    {
+        if (uzytkownicy[i].nazwa == nazwa)
+        {
+            for (int proby = 0; proby < 3; proby++)
+            {
+                cout << "Podaj haslo. Pozostalo prob " << 3-proby << ": ";
+                cin >> haslo;
+                if (uzytkownicy[i].haslo == haslo)
+                {
+                    cout << "Login i haslo poprawne" << endl;
+                    Sleep(1000);
+                    return uzytkownicy[i].id;
+                }
+            }
+            cout << "Podales 3 razy bledne haslo. Poczekaj 3 sekundy przed kolejna proba" << endl;
+            Sleep(1000);
+            return 0;
+        }
+        i++;
+    }
+    cout << "Nie ma takiego uzytkownika" << endl;
+    Sleep(1000);
+    return 0;
+}
+
+void zmianaHasla(vector <Uzytkownik> &uzytkownicy, int idZalogowanegoUzytkownika)
+{
+    string haslo;
+    int iloscUzytkownikow = uzytkownicy.size();
+    cout << "Podaj nowe haslo: ";
+    cin >> haslo;
+
+    for (int i = 0; i < iloscUzytkownikow; i++)
+    {
+        if (uzytkownicy[i].id == idZalogowanegoUzytkownika)
+        {
+            uzytkownicy[i].haslo = haslo;
+            cout << "Haslo zostalo zmienione" << endl;
+            Sleep(1000);
+        }
+    }
+}
+
+struct Kontakt
+{
+    int id, idUzytkownika;
+    string imie, nazwisko, adres, numerTelefonu, email;
+};
+
 
 void pobierzDaneJednegoZnajomego(string &linia, Kontakt &nowyZajomy)
 {
@@ -125,18 +199,21 @@ void pobierzDaneJednegoZnajomego(string &linia, Kontakt &nowyZajomy)
             nowyZajomy.id = atoi(atrybutZnajomego.c_str());
             break;
         case 2:
-            nowyZajomy.imie = atrybutZnajomego;
+            nowyZajomy.idUzytkownika = atoi(atrybutZnajomego.c_str());
             break;
         case 3:
-            nowyZajomy.nazwisko = atrybutZnajomego;
+            nowyZajomy.imie = atrybutZnajomego;
             break;
         case 4:
-            nowyZajomy.numerTelefonu = atrybutZnajomego;
+            nowyZajomy.nazwisko = atrybutZnajomego;
             break;
         case 5:
-            nowyZajomy.email = atrybutZnajomego;
+            nowyZajomy.numerTelefonu = atrybutZnajomego;
             break;
         case 6:
+            nowyZajomy.email = atrybutZnajomego;
+            break;
+        case 7:
             nowyZajomy.adres = atrybutZnajomego;
             break;
         }
@@ -145,7 +222,138 @@ void pobierzDaneJednegoZnajomego(string &linia, Kontakt &nowyZajomy)
     }
 }
 
-void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
+void zaktualizujPlikZDanymi(vector <Kontakt> &znajomi, int idZalogowanegoUzytkownika)
+{
+    Kontakt przepisywanyZnajomy;
+    string linia;
+    ofstream noweDaneKsiazkiAdresowej;
+    noweDaneKsiazkiAdresowej.open("nowaKsiazkaAdresowaDane.txt", ios::out | ios::app);
+    ifstream daneKsiazkiAdresowej;
+    daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt", ios::in);
+
+    int liczbaZnajomych = znajomi.size();
+
+    for (int i = 0; i < liczbaZnajomych; i++)
+    {
+        noweDaneKsiazkiAdresowej << znajomi[i].id << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].idUzytkownika << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].imie << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].nazwisko << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].numerTelefonu << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].email << "|";
+        noweDaneKsiazkiAdresowej << znajomi[i].adres <<  "|" << endl;
+    }
+
+    while (getline(daneKsiazkiAdresowej,linia))
+    {
+        pobierzDaneJednegoZnajomego(linia, przepisywanyZnajomy);
+        if (przepisywanyZnajomy.idUzytkownika != idZalogowanegoUzytkownika)
+        {
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.id << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.idUzytkownika << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.imie << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.nazwisko << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.numerTelefonu << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.email << "|";
+            noweDaneKsiazkiAdresowej << przepisywanyZnajomy.adres <<  "|" << endl;
+        }
+    }
+
+    daneKsiazkiAdresowej.close();
+    noweDaneKsiazkiAdresowej.close();
+    remove("ksiazkaAdresowaDane.txt");
+    rename("nowaKsiazkaAdresowaDane.txt", "ksiazkaAdresowaDane.txt" );
+}
+
+void wyswietlMenuGlowne()
+{
+    system("cls");
+    cout << "1. Dodaj znajomego" << endl;
+    cout << "2. Wyszukaj znajomego (wpisz imie)" << endl;
+    cout << "3. Wyszukaj znajomego (wpisz nazwisko)" << endl;
+    cout << "4. Zmodyfikuj znajomego" << endl;
+    cout << "5. Usun znajomego" << endl;
+    cout << "6. Wyswietl wszystkich znajomych" << endl;
+    cout << "7. Zmiana hasla" << endl;
+    cout << "8. Wylogowanie" << endl << endl;
+}
+
+void wyswietlMenuWprowadzaniaZmian()
+{
+    cout << "1. Wyswietl wszystkie kontakty i wybierz znajomego" << endl;
+    cout << "2. Wyszukaj znajomego po imieniu" << endl;
+    cout << "3. Wyszukaj znajomego po nazwisku" << endl;
+    cout << "4. Powrot do menu glownego" << endl;
+    cout << endl << "Wybor: ";
+}
+
+int znajdzWolneID(vector <int> &zajeteID)
+{
+    int sprawdzaneID = 1;
+    int liczbaZajetychID = zajeteID.size();
+    if (liczbaZajetychID != 0)
+    {
+        int i = 0;
+        while(i < liczbaZajetychID)
+        {
+            if (zajeteID[i] == sprawdzaneID)
+            {
+                sprawdzaneID++;
+                i = 0;
+            }
+            else
+            {
+                i++;
+            }
+        }
+    }
+    return sprawdzaneID;
+}
+
+void dopiszZnajomegoDoPliku(Kontakt nowyZnajomy)
+{
+    fstream daneKsiazkiAdresowej;
+    daneKsiazkiAdresowej.open("ksiazkaAdresowaDane.txt", ios::out | ios::app);
+    daneKsiazkiAdresowej << nowyZnajomy.id << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.idUzytkownika << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.imie << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.nazwisko << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.numerTelefonu << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.email << "|";
+    daneKsiazkiAdresowej << nowyZnajomy.adres <<  "|" << endl;
+    daneKsiazkiAdresowej.close();
+}
+
+void dodajZnajomego(vector <Kontakt> &znajomi, vector <int> &zajeteID, int idZalogowanegoUzytkownika)
+{
+    system("cls");
+    Kontakt nowyZnajomy;
+    nowyZnajomy.id = znajdzWolneID(zajeteID);
+    zajeteID.push_back(nowyZnajomy.id);
+    nowyZnajomy.idUzytkownika = idZalogowanegoUzytkownika;
+
+    cout << "Podaj imie: ";
+    cin >> nowyZnajomy.imie;
+    cout << "Podaj nazwisko: ";
+    cin >> nowyZnajomy.nazwisko;
+    cout << "Podaj nr telefonu: ";
+    cin.sync();
+    getline(cin, nowyZnajomy.numerTelefonu);
+    cout << "Podaj e-mail: ";
+    cin >> nowyZnajomy.email;
+    cout << "Podaj adres: ";
+    cin.sync();
+    getline(cin, nowyZnajomy.adres);
+
+    znajomi.push_back(nowyZnajomy);
+    dopiszZnajomegoDoPliku(nowyZnajomy);
+
+    cout << "Pomyslnie dodano do listy kontaktow!";
+    Sleep(1000);
+}
+
+
+void wczytajZnajomychZPliku(vector <Kontakt> &znajomi, vector <int> &zajeteID, int idZalogowanegoUzytkownika)
 {
     fstream daneKsiazkiAdresowej;
     string linia;
@@ -160,15 +368,17 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi)
     }
     else
     {
-        cout << "Wczytywanie znajomych. Prosze czekac..." << endl;
         while(getline(daneKsiazkiAdresowej,linia))
         {
             pobierzDaneJednegoZnajomego(linia, nowyZajomy);
-            znajomi.push_back(nowyZajomy);
+            zajeteID.push_back(nowyZajomy.id);
+
+            if (nowyZajomy.idUzytkownika == idZalogowanegoUzytkownika)
+            {
+                znajomi.push_back(nowyZajomy);
+            }
         }
         daneKsiazkiAdresowej.close();
-        cout << "Wczytano dane kontaktowe!" << endl;
-        Sleep(1000);
     }
 }
 
@@ -274,6 +484,7 @@ void wpiszNoweDaneZnajomego(vector <Kontakt> &znajomi, int modyfikowaneID)
             break;
         }
     }
+
 
     cout << "Zmien imie (1 - tak, 0 - nie): ";
     cin >> czyZmianaAtrybutu;
@@ -402,7 +613,7 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
     wyswietlKomunikatPowrotMenuGlowne();
 }
 
-void usunZnajomegoPoID(vector <Kontakt> &znajomi, int usuwaneID)
+void usunZnajomegoPoID(vector <Kontakt> &znajomi, vector <int> &zajeteID, int usuwaneID)
 {
     int liczbaZnajomych = znajomi.size();
     for (int i = 0; i < liczbaZnajomych; i++)
@@ -413,9 +624,17 @@ void usunZnajomegoPoID(vector <Kontakt> &znajomi, int usuwaneID)
             break;
         }
     }
+
+    vector <int>::iterator pozycjaUsuwanegoID;
+    pozycjaUsuwanegoID = find(zajeteID.begin(), zajeteID.end(), usuwaneID);
+
+    if (pozycjaUsuwanegoID != zajeteID.end())
+    {
+        zajeteID.erase(pozycjaUsuwanegoID);
+    }
 }
 
-void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
+void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID, vector <int> &zajeteID)
 {
     listaID.clear();
     int usuwaneID, numerUzytkownikaDoUsuniecia;
@@ -472,7 +691,7 @@ void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
         else
         {
             usuwaneID = listaID[numerUzytkownikaDoUsuniecia - 1];
-            usunZnajomegoPoID(znajomi, usuwaneID);
+            usunZnajomegoPoID(znajomi, zajeteID, usuwaneID);
             cout << "Usunieto znajomego!" << endl << endl;;
         }
     }
@@ -485,47 +704,88 @@ void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
 
 int main()
 {
+    vector <Uzytkownik> uzytkownicy;
+    int idZalogowanegoUzytkownika = 0;
+    int iloscUzytkownikow = 0;
     vector <Kontakt> znajomi;
     vector <int> listaID;
+    vector <int> zajeteID;
     char wyborUzytkownika;
-    wczytajZnajomychZPliku(znajomi);
+
+    wczytajUzytkownikowZPliku(uzytkownicy);
 
     while(1)
     {
-        wyswietlMenuGlowne();
-        cout << "Wybor: ";
-        cin >> wyborUzytkownika;
-
-        switch (wyborUzytkownika)
+        if (idZalogowanegoUzytkownika == 0)
         {
-        case '1':
-            dodajZnajomego(znajomi);
-            break;
-        case '2':
-            wyszukajZnajomegoPoImieniu(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '3':
-            wyszukajZnajomegoPoNazwisku(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '4':
-            zmodyfikujZnajomego(znajomi, listaID);
-            break;
-        case '5':
-            usunZnajomego(znajomi, listaID);
-            break;
-        case '6':
-            wypiszWszystkichZnajomych(znajomi, listaID);
-            wyswietlKomunikatPowrotMenuGlowne();
-            break;
-        case '9':
-            zaktualizujPlikZDanymi(znajomi);
-            cout << "Wyjscie z programu!" << endl;
-            exit(0);
-        default:
-            continue;
+            system("cls");
+            cout << "Ksiazka adresowa" << endl;
+            cout << "1. Rejestracja" << endl;
+            cout << "2. Logowanie" << endl;
+            cout << "9. Zakoncz program" << endl;
+            cin >> wyborUzytkownika;
+
+            switch (wyborUzytkownika)
+            {
+            case '1':
+                rejestracja(uzytkownicy);
+                zaktualizujPlikZUzytkownikami(uzytkownicy);
+                break;
+            case '2':
+                idZalogowanegoUzytkownika = logowanie(uzytkownicy);
+                if (idZalogowanegoUzytkownika != 0)
+                    wczytajZnajomychZPliku(znajomi, zajeteID, idZalogowanegoUzytkownika);
+                break;
+            case '9':
+                cout << "Wyjscie z programu!" << endl;
+                exit(0);
+            default:
+                cout << "Nieprawidlowy wybor!" << endl;
+            }
+        }
+        else
+        {
+            wyswietlMenuGlowne();
+            cout << "Wybor: ";
+            cin >> wyborUzytkownika;
+
+            switch (wyborUzytkownika)
+            {
+            case '1':
+                dodajZnajomego(znajomi, zajeteID, idZalogowanegoUzytkownika);
+                break;
+            case '2':
+                wyszukajZnajomegoPoImieniu(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '3':
+                wyszukajZnajomegoPoNazwisku(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '4':
+                zmodyfikujZnajomego(znajomi, listaID);
+                zaktualizujPlikZDanymi(znajomi, idZalogowanegoUzytkownika);
+                break;
+            case '5':
+                usunZnajomego(znajomi, listaID, zajeteID);
+                zaktualizujPlikZDanymi(znajomi, idZalogowanegoUzytkownika);
+                break;
+            case '6':
+                wypiszWszystkichZnajomych(znajomi, listaID);
+                wyswietlKomunikatPowrotMenuGlowne();
+                break;
+            case '7':
+                zmianaHasla(uzytkownicy, idZalogowanegoUzytkownika);
+                zaktualizujPlikZUzytkownikami(uzytkownicy);
+                break;
+            case '8':
+                idZalogowanegoUzytkownika = 0;
+                znajomi.clear();
+                zajeteID.clear();
+                break;
+            default:
+                continue;
+            }
         }
     }
-    return 0;
 }
