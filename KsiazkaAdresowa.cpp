@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 void wyswietlKomunikatPowrotMenuGlowne()
@@ -87,7 +88,6 @@ void wczytajUzytkownikowZPliku(vector <Uzytkownik> &uzytkownicy)
     }
 }
 
-
 void rejestracja(vector <Uzytkownik> &uzytkownicy)
 {
     string nazwa, haslo;
@@ -139,7 +139,7 @@ int logowanie(vector <Uzytkownik> &uzytkownicy)
                 cin >> haslo;
                 if (uzytkownicy[i].haslo == haslo)
                 {
-                    cout << "Zalogowales sie." << endl;
+                    cout << "Login i haslo poprawne" << endl;
                     Sleep(1000);
                     return uzytkownicy[i].id;
                 }
@@ -222,7 +222,6 @@ void pobierzDaneJednegoZnajomego(string &linia, Kontakt &nowyZajomy)
     }
 }
 
-
 void zaktualizujPlikZDanymi(vector <Kontakt> &znajomi, int idZalogowanegoUzytkownika)
 {
     Kontakt przepisywanyZnajomy;
@@ -266,8 +265,6 @@ void zaktualizujPlikZDanymi(vector <Kontakt> &znajomi, int idZalogowanegoUzytkow
     rename("nowaKsiazkaAdresowaDane.txt", "ksiazkaAdresowaDane.txt" );
 }
 
-
-
 void wyswietlMenuGlowne()
 {
     system("cls");
@@ -281,8 +278,6 @@ void wyswietlMenuGlowne()
     cout << "8. Wylogowanie" << endl << endl;
 }
 
-
-
 void wyswietlMenuWprowadzaniaZmian()
 {
     cout << "1. Wyswietl wszystkie kontakty i wybierz znajomego" << endl;
@@ -292,16 +287,16 @@ void wyswietlMenuWprowadzaniaZmian()
     cout << endl << "Wybor: ";
 }
 
-int znajdzWolneID(vector <Kontakt> &znajomi)
+int znajdzWolneID(vector <int> &zajeteID)
 {
     int sprawdzaneID = 1;
-    int liczbaZnajomych = znajomi.size();
-    if (liczbaZnajomych != 0)
+    int liczbaZajetychID = zajeteID.size();
+    if (liczbaZajetychID != 0)
     {
         int i = 0;
-        while(i < liczbaZnajomych)
+        while(i < liczbaZajetychID)
         {
-            if (znajomi[i].id == sprawdzaneID)
+            if (zajeteID[i] == sprawdzaneID)
             {
                 sprawdzaneID++;
                 i = 0;
@@ -329,11 +324,12 @@ void dopiszZnajomegoDoPliku(Kontakt nowyZnajomy)
     daneKsiazkiAdresowej.close();
 }
 
-void dodajZnajomego(vector <Kontakt> &znajomi, int idZalogowanegoUzytkownika)
+void dodajZnajomego(vector <Kontakt> &znajomi, vector <int> &zajeteID, int idZalogowanegoUzytkownika)
 {
     system("cls");
     Kontakt nowyZnajomy;
-    nowyZnajomy.id = znajdzWolneID(znajomi);
+    nowyZnajomy.id = znajdzWolneID(zajeteID);
+    zajeteID.push_back(nowyZnajomy.id);
     nowyZnajomy.idUzytkownika = idZalogowanegoUzytkownika;
 
     cout << "Podaj imie: ";
@@ -357,8 +353,7 @@ void dodajZnajomego(vector <Kontakt> &znajomi, int idZalogowanegoUzytkownika)
 }
 
 
-
-void wczytajZnajomychZPliku(vector <Kontakt> &znajomi, int idZalogowanegoUzytkownika)
+void wczytajZnajomychZPliku(vector <Kontakt> &znajomi, vector <int> &zajeteID, int idZalogowanegoUzytkownika)
 {
     fstream daneKsiazkiAdresowej;
     string linia;
@@ -373,19 +368,17 @@ void wczytajZnajomychZPliku(vector <Kontakt> &znajomi, int idZalogowanegoUzytkow
     }
     else
     {
-        cout << "Wczytywanie znajomych. Prosze czekac..." << endl;
         while(getline(daneKsiazkiAdresowej,linia))
         {
             pobierzDaneJednegoZnajomego(linia, nowyZajomy);
-            znajomi.push_back(nowyZajomy);
-            /*if (nowyZajomy.idUzytkownika == idZalogowanegoUzytkownika)
+            zajeteID.push_back(nowyZajomy.id);
+
+            if (nowyZajomy.idUzytkownika == idZalogowanegoUzytkownika)
             {
                 znajomi.push_back(nowyZajomy);
-            }*/
+            }
         }
         daneKsiazkiAdresowej.close();
-        cout << "Wczytano dane kontaktowe!" << endl;
-        Sleep(1000);
     }
 }
 
@@ -620,7 +613,7 @@ void zmodyfikujZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
     wyswietlKomunikatPowrotMenuGlowne();
 }
 
-void usunZnajomegoPoID(vector <Kontakt> &znajomi, int usuwaneID)
+void usunZnajomegoPoID(vector <Kontakt> &znajomi, vector <int> &zajeteID, int usuwaneID)
 {
     int liczbaZnajomych = znajomi.size();
     for (int i = 0; i < liczbaZnajomych; i++)
@@ -631,9 +624,17 @@ void usunZnajomegoPoID(vector <Kontakt> &znajomi, int usuwaneID)
             break;
         }
     }
+
+    vector <int>::iterator pozycjaUsuwanegoID;
+    pozycjaUsuwanegoID = find(zajeteID.begin(), zajeteID.end(), usuwaneID);
+
+    if (pozycjaUsuwanegoID != zajeteID.end())
+    {
+        zajeteID.erase(pozycjaUsuwanegoID);
+    }
 }
 
-void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
+void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID, vector <int> &zajeteID)
 {
     listaID.clear();
     int usuwaneID, numerUzytkownikaDoUsuniecia;
@@ -690,7 +691,7 @@ void usunZnajomego(vector <Kontakt> &znajomi, vector <int> &listaID)
         else
         {
             usuwaneID = listaID[numerUzytkownikaDoUsuniecia - 1];
-            usunZnajomegoPoID(znajomi, usuwaneID);
+            usunZnajomegoPoID(znajomi, zajeteID, usuwaneID);
             cout << "Usunieto znajomego!" << endl << endl;;
         }
     }
@@ -708,6 +709,7 @@ int main()
     int iloscUzytkownikow = 0;
     vector <Kontakt> znajomi;
     vector <int> listaID;
+    vector <int> zajeteID;
     char wyborUzytkownika;
 
     wczytajUzytkownikowZPliku(uzytkownicy);
@@ -732,7 +734,7 @@ int main()
             case '2':
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
                 if (idZalogowanegoUzytkownika != 0)
-                    wczytajZnajomychZPliku(znajomi, idZalogowanegoUzytkownika);
+                    wczytajZnajomychZPliku(znajomi, zajeteID, idZalogowanegoUzytkownika);
                 break;
             case '9':
                 cout << "Wyjscie z programu!" << endl;
@@ -750,7 +752,7 @@ int main()
             switch (wyborUzytkownika)
             {
             case '1':
-                dodajZnajomego(znajomi, idZalogowanegoUzytkownika);
+                dodajZnajomego(znajomi, zajeteID, idZalogowanegoUzytkownika);
                 break;
             case '2':
                 wyszukajZnajomegoPoImieniu(znajomi, listaID);
@@ -765,7 +767,7 @@ int main()
                 zaktualizujPlikZDanymi(znajomi, idZalogowanegoUzytkownika);
                 break;
             case '5':
-                usunZnajomego(znajomi, listaID);
+                usunZnajomego(znajomi, listaID, zajeteID);
                 zaktualizujPlikZDanymi(znajomi, idZalogowanegoUzytkownika);
                 break;
             case '6':
@@ -779,6 +781,7 @@ int main()
             case '8':
                 idZalogowanegoUzytkownika = 0;
                 znajomi.clear();
+                zajeteID.clear();
                 break;
             default:
                 continue;
