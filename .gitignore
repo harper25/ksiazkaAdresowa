@@ -6,3 +6,4 @@ TODO.txt
 *.cscope_file_list
 bin/
 obj/
+backups/
