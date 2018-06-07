@@ -47,7 +47,7 @@ User FileUsers::readOneUserData(std::string &line)
         switch(numberOfAttribute)
         {
         case 1:
-            id = atoi(attribute.c_str());
+            id = conversion.string2int(attribute);
             break;
         case 2:
             login = attribute;

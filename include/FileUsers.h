@@ -3,6 +3,7 @@
 
 #include <File.h>
 #include "User.h"
+#include "Conversion.h"
 #include <string>
 #include <fstream>
 #include <vector>
@@ -24,6 +25,7 @@ class FileUsers : public File
         std::string filename;
         std::fstream userData;
         User readOneUserData(std::string&);
+        Conversion conversion;
 };
 
 #endif // FILEUSERS_H
