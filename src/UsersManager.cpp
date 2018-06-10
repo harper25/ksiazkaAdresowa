@@ -25,7 +25,7 @@ void UsersManager::registerNewUser()
     std::string login, password;
     int usersCount = users.size();
     system("cls");
-    std::cout << "Phone Book --> New Account" << std::endl;
+    std::cout << "Phone Book --> New Account" << std::endl << std::endl;
     std::cout << "Please, enter your username: ";
     std::cin.sync();
     getline(std::cin, login);
@@ -68,7 +68,7 @@ void UsersManager::logging()
     }
 
     system("cls");
-    std::cout << "Phone Book --> Logging" << std::endl;
+    std::cout << "Phone Book --> Logging" << std::endl << std::endl;
     std::cout << "Please, give your login: ";
     std::cin.sync();
     getline(std::cin, login);
@@ -84,9 +84,9 @@ void UsersManager::logging()
                 std::cin >> password;
                 if (users[i].getPassword() == password)
                 {
+                    loggedUserId = users[i].getId();
                     std::cout << "Login and password correct!" << std::endl;
                     Sleep(1000);
-                    loggedUserId = users[i].getId();
                     return;
                 }
             }
@@ -105,7 +105,7 @@ void UsersManager::changePassword()
 {
     std::string password;
     system("cls");
-    std::cout << "Phone Book --> User Menu --> Password change" << std::endl;
+    std::cout << "Phone Book --> User Menu --> Password change" << std::endl << std::endl;
     std::cout << "Type in your new password: ";
     std::cin.sync();
     getline(std::cin, password);

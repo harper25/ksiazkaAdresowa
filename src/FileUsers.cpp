@@ -1,4 +1,6 @@
 #include "FileUsers.h"
+#include <iostream>
+#include <windows.h>
 
 FileUsers::FileUsers(std::string ifilename)
 {

@@ -7,7 +7,6 @@ class User
     public:
         User(std::string login, std::string password);
         User(int id, std::string login, std::string password);
-        void setId(int val);
         std::string getLogin();
         void setLogin(std::string val);
         std::string getPassword();
@@ -22,6 +21,7 @@ class User
         static int nextId;
         std::string login;
         std::string password;
+        void setId(int val);
 };
 
 #endif // USER_H

@@ -1,5 +1,4 @@
 #include "User.h"
-#include <string>
 
 int User::nextId = 1;
 
@@ -16,7 +15,7 @@ User::User(int id, std::string login, std::string password)
     setLogin(login);
     setPassword(password);
     if (id >= nextId)
-        nextId++;
+        nextId = id + 1;
 }
 
 std::string User::getLogin()
