@@ -1,10 +1,5 @@
 #include <iostream>
 #include <windows.h>
-//#include <conio.h>
-#include <fstream>
-//#include <cstdlib>
-#include <vector>
-//#include <algorithm>
 #include "User.h"
 #include "UsersManager.h"
 #include "File.h"
