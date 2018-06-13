@@ -36,90 +36,89 @@ void showUserMenu()
 int main()
 {
     UsersManager usersManager;
-    ContactsManager contactsManager;
     string choice;
 
     while(1)
     {
-        if (usersManager.getLoggedUserId() == 0)
+        showWelcomeMenu();
+        cout << "Your choice: ";
+        cin.sync();
+        getline(cin, choice);
+        if ((choice.length() > 1) || (!isdigit(choice[0])))
         {
-            showWelcomeMenu();
-            cout << "Your choice: ";
-            cin.sync();
-            getline(cin, choice);
-            if ((choice.length() > 1) || (!isdigit(choice[0])))
-            {
-                choice = "0";
-            }
-
-            switch (choice[0])
-            {
-            case '1':
-                usersManager.registerNewUser();
-                break;
-            case '2':
-                usersManager.logging();
-                if (usersManager.getLoggedUserId() != 0)
-                    contactsManager.loadContacts(usersManager.getLoggedUserId());
-                break;
-            case '9':
-                system("cls");
-                cout << "Good bye!" << endl;
-                exit(0);
-            default:
-                cout << "Invalid choice!" << endl;
-                Sleep(1000);
-            }
+            choice = "0";
         }
-        else
-        {
-            showUserMenu();
-            cout << "Your choice: ";
-            cin.sync();
-            getline(cin, choice);
-            if ((choice.length() > 1) || (!isdigit(choice[0])))
-            {
-                choice = "0";
-            }
 
-            switch (choice[0])
+        switch (choice[0])
+        {
+        case '1':
+            usersManager.registerNewUser();
+            break;
+        case '2':
+            usersManager.logging();
+            if (usersManager.getLoggedUserId() != 0)
             {
-            case '1':
-                contactsManager.addNewContact(usersManager.getLoggedUserId());
-                break;
-            case '2':
-                contactsManager.findContactByName();
-                if (contactsManager.getContactsCount() > 0)
-                    contactsManager.showReturnMessage();
-                break;
-            case '3':
-                contactsManager.findContactBySurname();
-                if (contactsManager.getContactsCount() > 0)
-                    contactsManager.showReturnMessage();
-                break;
-            case '4':
-                contactsManager.editContact(usersManager.getLoggedUserId());
-                break;
-            case '5':
-                contactsManager.deleteContact(usersManager.getLoggedUserId());
-                break;
-            case '6':
-                contactsManager.showContacts();
-                if (contactsManager.getContactsCount() > 0)
-                    contactsManager.showReturnMessage();
-                break;
-            case '7':
-                usersManager.changePassword();
-                break;
-            case '8':
-                contactsManager.clearData();
-                usersManager.setLoggedUserId(0);
-                break;
-            default:
-                cout << "Invalid choice!" << endl;
-                Sleep(1000);
+                ContactsManager contactsManager(usersManager.getLoggedUserId());
+
+                while (usersManager.getLoggedUserId() != 0)
+                {
+                    showUserMenu();
+                    cout << "Your choice: ";
+                    cin.sync();
+                    getline(cin, choice);
+                    if ((choice.length() > 1) || (!isdigit(choice[0])))
+                    {
+                        choice = "0";
+                    }
+
+                    switch (choice[0])
+                    {
+                    case '1':
+                        contactsManager.addNewContact();
+                        break;
+                    case '2':
+                        contactsManager.findContactByName();
+                        if (contactsManager.getContactsCount() > 0)
+                            contactsManager.showReturnMessage();
+                        break;
+                    case '3':
+                        contactsManager.findContactBySurname();
+                        if (contactsManager.getContactsCount() > 0)
+                            contactsManager.showReturnMessage();
+                        break;
+                    case '4':
+                        contactsManager.editContact();
+                        break;
+                    case '5':
+                        contactsManager.deleteContact();
+                        break;
+                    case '6':
+                        contactsManager.showContacts();
+                        if (contactsManager.getContactsCount() > 0)
+                            contactsManager.showReturnMessage();
+                        break;
+                    case '7':
+                        usersManager.changePassword();
+                        break;
+                    case '8':
+//                        delete contactsManager;
+                        contactsManager.clearData();
+                        usersManager.setLoggedUserId(0);
+                        break;
+                    default:
+                        cout << "Invalid choice!" << endl;
+                        Sleep(1000);
+                    }
+                }
             }
+            break;
+        case '9':
+            system("cls");
+            cout << "Good bye!" << endl;
+            exit(0);
+        default:
+            cout << "Invalid choice!" << endl;
+            Sleep(1000);
         }
     }
 }
-

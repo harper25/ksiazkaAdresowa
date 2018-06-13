@@ -2,8 +2,9 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
+using namespace std;
 
-UsersManager::UsersManager(std::string ifilename)
+UsersManager::UsersManager(string ifilename)
 : fileUsers(ifilename)
 {
     setLoggedUserId(0);
@@ -22,21 +23,21 @@ int UsersManager::getLoggedUserId()
 
 void UsersManager::registerNewUser()
 {
-    std::string login, password;
+    string login, password;
     int usersCount = users.size();
     system("cls");
-    std::cout << "Phone Book --> New Account" << std::endl << std::endl;
-    std::cout << "Please, enter your username: ";
-    std::cin.sync();
-    getline(std::cin, login);
+    cout << "Phone Book --> New Account" << endl << endl;
+    cout << "Please, enter your username: ";
+    cin.sync();
+    getline(cin, login);
     int i = 0;
     while (i < usersCount)
     {
         if (users[i].getLogin() == login)
         {
-            std::cout << "This username already exists in database! Please, enter another username: ";
-            std::cin.sync();
-            getline(std::cin, login);
+            cout << "This username already exists in database! Please, enter another username: ";
+            cin.sync();
+            getline(cin, login);
             i = 0;
         }
         else
@@ -44,34 +45,34 @@ void UsersManager::registerNewUser()
             i++;
         }
     }
-    std::cout << "Please, enter your password: ";
-    std::cin.sync();
-    getline(std::cin, password);
+    cout << "Please, enter your password: ";
+    cin.sync();
+    getline(cin, password);
 
     User newUser(login, password);
     users.push_back(newUser);
-    std::cout << "Account created!" << std::endl;
+    cout << "Account created!" << endl;
     fileUsers.saveUsersToFile(users);
     Sleep(1000);
 }
 
 void UsersManager::logging()
 {
-    std::string login, password;
+    string login, password;
     int usersCount = users.size();
 
     if (usersCount == 0)
     {
-        std::cout << "No users in database! Please, create a new account." << std::endl;
+        cout << "No users in database! Please, create a new account." << endl;
         Sleep(1000);
         return;
     }
 
     system("cls");
-    std::cout << "Phone Book --> Logging" << std::endl << std::endl;
-    std::cout << "Please, give your login: ";
-    std::cin.sync();
-    getline(std::cin, login);
+    cout << "Phone Book --> Logging" << endl << endl;
+    cout << "Please, give your login: ";
+    cin.sync();
+    getline(cin, login);
     int i = 0;
     while(i < usersCount)
     {
@@ -80,35 +81,35 @@ void UsersManager::logging()
             const int MAX_ATTEMPTS_COUNT = 3;
             for (int attempts = 0; attempts < MAX_ATTEMPTS_COUNT; attempts++)
             {
-                std::cout << "Please, give your password. Attempts left: " << MAX_ATTEMPTS_COUNT - attempts << ": ";
-                std::cin >> password;
+                cout << "Please, give your password. Attempts left: " << MAX_ATTEMPTS_COUNT - attempts << ": ";
+                cin >> password;
                 if (users[i].getPassword() == password)
                 {
                     loggedUserId = users[i].getId();
-                    std::cout << "Login and password correct!" << std::endl;
+                    cout << "Login and password correct!" << endl;
                     Sleep(1000);
                     return;
                 }
             }
-            std::cout << MAX_ATTEMPTS_COUNT << " attempts to log in failed. Wait for 3 seconds before another try." << std::endl;
+            cout << MAX_ATTEMPTS_COUNT << " attempts to log in failed. Wait for 3 seconds before another try." << endl;
             Sleep(1000);
             return;
         }
         i++;
     }
-    std::cout << "There is no such user!" << std::endl;
+    cout << "There is no such user!" << endl;
     Sleep(1000);
 }
 
 
 void UsersManager::changePassword()
 {
-    std::string password;
+    string password;
     system("cls");
-    std::cout << "Phone Book --> User Menu --> Password change" << std::endl << std::endl;
-    std::cout << "Type in your new password: ";
-    std::cin.sync();
-    getline(std::cin, password);
+    cout << "Phone Book --> User Menu --> Password change" << endl << endl;
+    cout << "Type in your new password: ";
+    cin.sync();
+    getline(cin, password);
     int usersCount = users.size();
 
     for (int i = 0; i < usersCount; i++)
@@ -117,7 +118,7 @@ void UsersManager::changePassword()
         {
             users[i].setPassword(password);
             fileUsers.saveUsersToFile(users);
-            std::cout << "Password changed!" << std::endl;
+            cout << "Password changed!" << endl;
             Sleep(1000);
         }
     }

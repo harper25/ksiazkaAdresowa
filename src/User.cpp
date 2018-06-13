@@ -1,15 +1,16 @@
 #include "User.h"
+using namespace std;
 
 int User::nextId = 1;
 
-User::User(std::string login, std::string password)
+User::User(string login, string password)
 {
     setId(nextId++);
     setLogin(login);
     setPassword(password);
 }
 
-User::User(int id, std::string login, std::string password)
+User::User(int id, string login, string password)
 {
     setId(id);
     setLogin(login);
@@ -18,22 +19,22 @@ User::User(int id, std::string login, std::string password)
         nextId = id + 1;
 }
 
-std::string User::getLogin()
+string User::getLogin()
 {
     return login;
 }
 
-void User::setLogin(std::string ilogin)
+void User::setLogin(string ilogin)
 {
     login = ilogin;
 }
 
-std::string User::getPassword()
+string User::getPassword()
 {
     return password;
 }
 
-void User::setPassword(std::string ipassword)
+void User::setPassword(string ipassword)
 {
     password = ipassword;
 }

@@ -9,17 +9,17 @@
 class ContactsManager
 {
     public:
-        ContactsManager(std::string = "contactData.txt");
-        void loadContacts(int loggedUserId);
-        void addNewContact(int loggedUserId);
+        ContactsManager(int loggedUserId, std::string = "contactData.txt");
+        void loadContacts();
+        void addNewContact();
         void showContacts();
-        void deleteContact(int loggedUserId);
-        void editContact(int loggedUserId);
+        void deleteContact();
+        void editContact();
         void findContactByName();
         void findContactBySurname();
         void clearData();
         void showReturnMessage();
-        int getContactsCount();
+        int  getContactsCount();
 
     protected:
 
@@ -30,6 +30,8 @@ class ContactsManager
         int chooseContact();
         Conversion conversion;
         void editDataOfOneContact(int);
+        void setLoggedUserId(int);
+        int loggedUserId;
 };
 
 #endif // CONTACTSMANAGER_H

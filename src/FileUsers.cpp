@@ -1,47 +1,48 @@
 #include "FileUsers.h"
 #include <iostream>
 #include <windows.h>
+using namespace std;
 
-FileUsers::FileUsers(std::string ifilename)
+FileUsers::FileUsers(string ifilename)
 {
     filename = ifilename;
 }
 
 bool FileUsers::isFileEmpty()
 {
-    return (userData.peek() == std::ifstream::traits_type::eof());
+    return (userData.peek() == ifstream::traits_type::eof());
 }
 
-std::string FileUsers::getFilename()
+string FileUsers::getFilename()
 {
     return filename;
 }
 
-void FileUsers::saveUsersToFile(std::vector <User> &users)
+void FileUsers::saveUsersToFile(vector <User> &users)
 {
-    userData.open(filename, std::ios::out);
+    userData.open(filename, ios::out);
     int usersCount = users.size();
 
     for (int i = 0; i < usersCount; i++)
     {
         userData << users[i].getId() << "|";
         userData << users[i].getLogin() << "|";
-        userData << users[i].getPassword() << "|" << std::endl;
+        userData << users[i].getPassword() << "|" << endl;
     }
     userData.close();
 }
 
-User FileUsers::readOneUserData(std::string &line)
+User FileUsers::readOneUserData(string &line)
 {
-    std::string sign = "|";
-    std::string login, password;
+    string sign = "|";
+    string login, password;
     int id;
     int oldSignPosition = -1;
     int newSignPosition = line.find(sign, 0);
     int numberOfAttribute = 0;
-    std::string attribute;
+    string attribute;
 
-    while(newSignPosition != std::string::npos)
+    while(newSignPosition != string::npos)
     {
         numberOfAttribute++;
         attribute = line.substr(oldSignPosition + 1, newSignPosition - oldSignPosition - 1);
@@ -67,12 +68,12 @@ User FileUsers::readOneUserData(std::string &line)
 }
 
 
-std::vector <User> FileUsers::readUsersFromFile()
+vector <User> FileUsers::readUsersFromFile()
 {
-    std::vector <User> users;
-    std::string line;
+    vector <User> users;
+    string line;
 
-    userData.open(filename, std::ios::in);
+    userData.open(filename, ios::in);
 
     if (!isFileEmpty())
     {

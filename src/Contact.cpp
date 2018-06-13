@@ -1,10 +1,11 @@
 #include "Contact.h"
 #include <iostream>
+using namespace std;
 
 int Contact::nextId = 1;
 
-Contact::Contact(int userId, std::string name, std::string surname,
-                std::string phoneNumber, std::string email, std::string address)
+Contact::Contact(int userId, string name, string surname,
+                string phoneNumber, string email, string address)
 {
     setId(nextId++);
     setUserId(userId);
@@ -15,21 +16,26 @@ Contact::Contact(int userId, std::string name, std::string surname,
     setEmail(email);
 }
 
-Contact::Contact(int id, int userId, std::string name, std::string surname,
-                std::string phoneNumber, std::string email, std::string address)
-                :Contact(userId, name, surname, phoneNumber, email, address)
+Contact::Contact(int id, int userId, string name, string surname,
+                string phoneNumber, string email, string address)
 {
     setId(id);
+    setUserId(userId);
+    setName(name);
+    setSurname(surname);
+    setAddress(address);
+    setPhoneNumber(phoneNumber);
+    setEmail(email);
     if (id >= nextId)
         nextId = id + 1;
 }
 
 void Contact::showContact()
 {
-    std::cout << getName() << " " << getSurname() << std::endl;
-    std::cout << "Phone number: " << getPhoneNumber() << std::endl;
-    std::cout << "Email: " << getEmail() << std::endl;
-    std::cout << "Address: " << getAddress() << std::endl;
+    cout << getName() << " " << getSurname() << endl;
+    cout << "Phone number: " << getPhoneNumber() << endl;
+    cout << "Email: " << getEmail() << endl;
+    cout << "Address: " << getAddress() << endl;
 }
 
 int Contact::getId()
@@ -49,43 +55,43 @@ void Contact::setUserId(int iuserId)
 {
     userId = iuserId;
 }
-std::string Contact::getName()
+string Contact::getName()
 {
     return name;
 }
-void Contact::setName(std::string iname)
+void Contact::setName(string iname)
 {
     name = iname;
 }
-std::string Contact::getSurname()
+string Contact::getSurname()
 {
     return surname;
 }
-void Contact::setSurname(std::string isurname)
+void Contact::setSurname(string isurname)
 {
     surname = isurname;
 }
-std::string Contact::getAddress()
+string Contact::getAddress()
 {
     return address;
 }
-void Contact::setAddress(std::string iaddress)
+void Contact::setAddress(string iaddress)
 {
     address = iaddress;
 }
-std::string Contact::getPhoneNumber()
+string Contact::getPhoneNumber()
 {
     return phoneNumber;
 }
-void Contact::setPhoneNumber(std::string iphoneNumber)
+void Contact::setPhoneNumber(string iphoneNumber)
 {
     phoneNumber = iphoneNumber;
 }
-std::string Contact::getEmail()
+string Contact::getEmail()
 {
     return email;
 }
-void Contact::setEmail(std::string iemail)
+void Contact::setEmail(string iemail)
 {
     email = iemail;
 }

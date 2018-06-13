@@ -1,23 +1,22 @@
 #include "FileContacts.h"
-//#include <algorithm>
-//#include <cstdio>
+using namespace std;
 
-FileContacts::FileContacts(std::string ifilename)
+FileContacts::FileContacts(string ifilename)
 {
     filename = ifilename;
 }
 
 bool FileContacts::isFileEmpty()
 {
-    return (contactData.peek() == std::ifstream::traits_type::eof());
+    return (contactData.peek() == ifstream::traits_type::eof());
 }
 
-std::string FileContacts::getFilename()
+string FileContacts::getFilename()
 {
     return filename;
 }
 
-void FileContacts::printOneContactToFile(Contact& contact, std::fstream& outputDataStream)
+void FileContacts::printOneContactToFile(Contact& contact, fstream& outputDataStream)
 {
     outputDataStream << contact.getId() << "|";
     outputDataStream << contact.getUserId() << "|";
@@ -25,55 +24,82 @@ void FileContacts::printOneContactToFile(Contact& contact, std::fstream& outputD
     outputDataStream << contact.getSurname() << "|";
     outputDataStream << contact.getPhoneNumber() << "|";
     outputDataStream << contact.getEmail() << "|";
-    outputDataStream << contact.getAddress() <<  "|" << std::endl;
+    outputDataStream << contact.getAddress() <<  "|" << endl;
 }
 
 void FileContacts::addOneContactToContactFile(Contact newContact)
 {
-    contactData.open(filename, std::ios::out | std::ios::app);
+    contactData.open(filename, ios::out | ios::app);
     printOneContactToFile(newContact, contactData);
     contactData.close();
 }
 
-void FileContacts::updateContactsFile(std::vector <Contact> &contacts, int loggedUserId)
+void FileContacts::updateContactsFile(vector <Contact> &contacts, int loggedUserId)
 {
-    std::fstream newContactData;
-    std::string temporaryFilename = "newContactData.txt";
-    std::string line;
-    newContactData.open(temporaryFilename, std::ios::out);
-    contactData.open(filename, std::ios::in);
+    fstream newContactData;
+    string temporaryFilename = "newContactData.txt";
+    string line;
+    newContactData.open(temporaryFilename, ios::out);
+    contactData.open(filename, ios::in);
     int contactsCount = contacts.size();
-
-    for (int i = 0; i < contactsCount; i++)
-    {
-        printOneContactToFile(contacts[i], newContactData);
-    }
+    int indexOfContact = 0;
 
     while (getline(contactData,line))
     {
-        Contact newContact = readOneContactData(line);
-        if (newContact.getUserId() != loggedUserId)
+        Contact oldContact = readOneContactData(line);
+        if (oldContact.getUserId() != loggedUserId)
         {
-            printOneContactToFile(newContact, newContactData);
+            printOneContactToFile(oldContact, newContactData);
+        }
+        else
+        {
+            if (indexOfContact < contactsCount)
+            {
+                if (oldContact.getId() == contacts[indexOfContact].getId())
+                {
+                    printOneContactToFile(contacts[indexOfContact], newContactData);
+                    indexOfContact++;
+                }
+            }
         }
     }
+    while (indexOfContact < contactsCount)
+    {
+        printOneContactToFile(contacts[indexOfContact], newContactData);
+        indexOfContact++;
+    }
+
+
+//    for (int i = 0; i < contactsCount; i++)
+//    {
+//        printOneContactToFile(contacts[i], newContactData);
+//    }
+//
+//    while (getline(contactData,line))
+//    {
+//        Contact newContact = readOneContactData(line);
+//        if (newContact.getUserId() != loggedUserId)
+//        {
+//            printOneContactToFile(newContact, newContactData);
+//        }
+//    }
     contactData.close();
     newContactData.close();
-    std::remove(filename.c_str());
+    remove(filename.c_str());
     rename(temporaryFilename.c_str(), filename.c_str());
 }
 
-Contact FileContacts::readOneContactData(std::string &line)
+Contact FileContacts::readOneContactData(string &line)
 {
-    std::string sign = "|";
-    std::string name, surname, phoneNumber, email, address;
+    string sign = "|";
+    string name, surname, phoneNumber, email, address;
     int id, userId;
     int oldSignPosition = -1;
     int newSignPosition = line.find(sign, 0);
     int numberOfAttribute = 0;
-    std::string attribute;
+    string attribute;
 
-    while(newSignPosition != std::string::npos)
+    while(newSignPosition != string::npos)
     {
         numberOfAttribute++;
         attribute = line.substr(oldSignPosition + 1, newSignPosition - oldSignPosition - 1);
@@ -111,11 +137,11 @@ Contact FileContacts::readOneContactData(std::string &line)
 }
 
 
-std::vector <Contact> FileContacts::readContactsFromFile(int loggedUserId)
+vector <Contact> FileContacts::readContactsFromFile(int loggedUserId)
 {
-    std::vector <Contact> contacts;
-    std::string line;
-    contactData.open(filename, std::ios::in);
+    vector <Contact> contacts;
+    string line;
+    contactData.open(filename, ios::in);
 
     if (!isFileEmpty())
     {

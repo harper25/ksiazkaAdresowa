@@ -36,7 +36,6 @@ class Contact
         std::string address;
         std::string phoneNumber;
         std::string email;
-
         void setId(int);
 };
 
