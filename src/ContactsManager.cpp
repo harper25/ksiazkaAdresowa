@@ -38,20 +38,46 @@ void ContactsManager::addNewContact()
     string name, surname, address, phoneNumber, email;
     system("cls");
     cout << "Phone Book --> User Menu --> New contact" << endl << endl;
-    cout << "Please, enter a name: ";
-    cin.sync();
-    getline(cin, name);
-    cout << "Please, enter a surname: ";
-    cin.sync();
-    getline(cin, surname);
-    cout << "Please, enter phone number: ";
-    cin.sync();
-    getline(cin, phoneNumber);
-    cout << "Please, enter an email: ";
-    cin >> email;
-    cout << "Please, enter an address: ";
-    cin.sync();
-    getline(cin, address);
+    do
+    {
+        cout << "Please, enter a name: ";
+        cin.sync();
+        getline(cin, name);
+    }
+    while (name.length() == 0);
+
+    do
+    {
+        cout << "Please, enter a surname: ";
+        cin.sync();
+        getline(cin, surname);
+    }
+    while (surname.length() == 0);
+
+    do
+    {
+        cout << "Please, enter a phone number: ";
+        cin.sync();
+        getline(cin, phoneNumber);
+    }
+    while (phoneNumber.length() == 0);
+
+    do
+    {
+        cout << "Please, enter an email: ";
+        cin.sync();
+        getline(cin, email);
+    }
+    while (email.length() == 0);
+
+    do
+    {
+        cout << "Please, enter an address (in a single line): ";
+        cin.sync();
+        getline(cin, address);
+    }
+    while (address.length() == 0);
+
     Contact newContact(loggedUserId, name, surname, phoneNumber, email, address);
     contacts.push_back(newContact);
 
@@ -174,9 +200,24 @@ void ContactsManager::deleteContact()
     int numberOfContactToBeDeleted = chooseContact();
     if (numberOfContactToBeDeleted != -1)
     {
-        contacts.erase(contacts.begin() + indicesOfMatchingContacts[numberOfContactToBeDeleted]);
-        fileContacts.updateContactsFile(contacts, loggedUserId);
-        cout << "Contact deleted!" << endl;
+        string confirmation;
+        cout << "Do you really want to delete " <<
+             contacts[indicesOfMatchingContacts[numberOfContactToBeDeleted]].getName() << " " <<
+             contacts[indicesOfMatchingContacts[numberOfContactToBeDeleted]].getSurname() <<
+             "?(y/n): ";
+        cin.sync();
+        getline(cin, confirmation);
+
+        if (confirmation == "y" || confirmation == "Y")
+        {
+            contacts.erase(contacts.begin() + indicesOfMatchingContacts[numberOfContactToBeDeleted]);
+            fileContacts.updateContactsFile(contacts, loggedUserId);
+            cout << "Contact deleted!" << endl;
+        }
+        else
+        {
+            cout << "Action aborted!" << endl;
+        }
         Sleep(1000);
     }
 }
@@ -212,33 +253,53 @@ void ContactsManager::editDataOfOneContact(int numberOfContactToBeEdited)
         switch(choice[0])
         {
         case '1':
-            cout << "Please, enter new name: ";
-            cin.sync();
-            getline(cin, attribute);
+            do
+            {
+                cout << "Please, enter new name: ";
+                cin.sync();
+                getline(cin, attribute);
+            }
+            while (attribute.length() == 0);
             contacts.at(indicesOfMatchingContacts.at(numberOfContactToBeEdited)).setName(attribute);
             break;
         case '2':
-            cout << "Please, enter new surname: ";
-            cin.sync();
-            getline(cin, attribute);
+            do
+            {
+                cout << "Please, enter new surname: ";
+                cin.sync();
+                getline(cin, attribute);
+            }
+            while (attribute.length() == 0);
             contacts.at(indicesOfMatchingContacts.at(numberOfContactToBeEdited)).setSurname(attribute);
             break;
         case '3':
-            cout << "Please, enter new phone number: ";
-            cin.sync();
-            getline(cin, attribute);
+            do
+            {
+                cout << "Please, enter new phone number: ";
+                cin.sync();
+                getline(cin, attribute);
+            }
+            while (attribute.length() == 0);
             contacts.at(indicesOfMatchingContacts.at(numberOfContactToBeEdited)).setPhoneNumber(attribute);
             break;
         case '4':
-            cout << "Please, enter new email: ";
-            cin.sync();
-            getline(cin, attribute);
+            do
+            {
+                cout << "Please, enter new email: ";
+                cin.sync();
+                getline(cin, attribute);
+            }
+            while (attribute.length() == 0);
             contacts.at(indicesOfMatchingContacts.at(numberOfContactToBeEdited)).setEmail(attribute);
             break;
         case '5':
-            cout << "Please, enter new address: ";
-            cin.sync();
-            getline(cin, attribute);
+            do
+            {
+                cout << "Please, enter new address: ";
+                cin.sync();
+                getline(cin, attribute);
+            }
+            while (attribute.length() == 0);
             contacts.at(indicesOfMatchingContacts.at(numberOfContactToBeEdited)).setAddress(attribute);
             break;
         case '6':
